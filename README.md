@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="mathbot.jpg" alt="mathbot logo" />
+  <img src="mathbot.png" alt="mathbot banner" />
 </p>
 
 # mathbot
