@@ -23,5 +23,9 @@ COPY . /backend/
 # Expose the port the backend runs on
 EXPOSE 8000
 
+COPY entrypoint.sh /backend/entrypoint.sh
+RUN chmod +x /backend/entrypoint.sh
+ENTRYPOINT ["/backend/entrypoint.sh"]
+
 # Run the application
 CMD ["gunicorn", "--bind", "0.0.0.0:8000", "server.wsgi:application"]
