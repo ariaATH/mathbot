@@ -167,7 +167,7 @@ function Account() {
                                     <div className="account-section">
                                         <div style={expand ? {display: 'none'} : { }}>
                                             <h4 style={{fontWeight: "900"}}>{data.name}</h4>
-                                            <Link style={{left: "20px"}} className="title-a not-display-in-mobile" to="post/create">
+                                            <Link style={{left: "20px"}} className="title-a not-display-in-mobile" to="/post/create">
                                                 <h6>نوشتن پست جدید</h6>
                                             </Link>
                                             <p>{data.bio}</p>
