@@ -17,6 +17,8 @@ services:
     build:
       context: ./backend
     container_name: server
+    volumes:
+      - ./backend/uploads:/backend/uploads
     ports:
       - "8000:8000"
     depends_on:

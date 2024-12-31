@@ -36,4 +36,5 @@ __pycache__/
 *.pyo
 
 # uploads
-backend/uploads
+backend/uploads/userprofiles
+backend/uploads/postimages
