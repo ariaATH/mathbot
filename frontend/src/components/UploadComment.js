@@ -2,14 +2,19 @@ import React, { useState } from 'react';
 import config from '../utils/config.js';
 import IsAuthenticated from "../utils/IsAuthenticated.js";
 import { Link } from 'react-router-dom';
-import { CKEditor } from '@ckeditor/ckeditor5-react';
-import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 
 function UploadComment(props) {
 
     const post = props.postId
 
-    const [content, setContent] = useState() 
+    const [formData, setFormData] = useState({
+      content: "",
+      post_id: post,
+    });
+
+    const handleChange = (e) => {
+      setFormData({ ...formData, [e.target.name]: e.target.value });
+    }; 
     
     const handleSubmit = async (e) => {
       e.preventDefault();
@@ -17,10 +22,7 @@ function UploadComment(props) {
       const TokenConfig = config();
 
       try {
-        const response = await TokenConfig.post("/comments/create/", {
-          content: content,
-          post_id: post
-        });
+        const response = await TokenConfig.post("/comments/create/", formData);
         console.log("Post created:", response.data);
         alert("دیدگاه شما با موفقیت ارسال شد");
         window.location.reload();
@@ -41,14 +43,11 @@ function UploadComment(props) {
         <div className="your-answer-box">
             <form onSubmit={handleSubmit}>
                 <div className="ask-description">
-                  <CKEditor
-                        editor={ ClassicEditor }
-                        onChange={ ( event, editor ) => {
-                        const data = editor.getData();
-                        setContent(data);
-                        } }
+                  <textarea
+                    className='ask-description-textarea'
+                    name="content"
+                    onChange={handleChange}
                   />
-
                 </div>
                 <div className="ask-button">
                     <button className="ask-input-button" type="submit">ارسال</button>

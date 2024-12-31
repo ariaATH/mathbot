@@ -1,9 +1,36 @@
+/* SCSS Codes */
+/* Fonts */
+@font-face {
+  font-family: "IRANYekanWebFn-Light";
+  src: url("../fonts/iranyekanweblightfanum.eot");
+  /* IE9 Compat Modes */
+  src: url("../fonts/iranyekanweblightfanum.eot?#iefix") format("embedded-opentype"), url("../fonts/iranyekanweblightfanum.otf") format("opentype"), url("../fonts/iranyekanweblightfanum.svg") format("svg"), url("../fonts/iranyekanweblightfanum.ttf") format("truetype"), url("../fonts/iranyekanweblightfanum.woff") format("woff"), url("../fonts/iranyekanweblightfanum.woff2") format("woff2");
+  /* Modern Browsers */
+  font-weight: normal;
+  font-style: normal;
+}
 body {
   width: 100%;
   overflow-x: hidden;
   padding-bottom: 70px;
   background-color: #16171a !important;
   color: #fff !important;
+}
+
+a,
+p,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+li,
+ol,
+span,
+input,
+button {
+  font-family: "IRANYekanWebFn-Light" !important;
 }
 
 html {
@@ -523,6 +550,7 @@ a {
   height: 40px;
   resize: none;
   direction: ltr;
+  font-family: "IRANYekanWebFn-Light" !important;
 }
 
 .ask-input-description {
@@ -536,6 +564,7 @@ a {
   border-radius: 10px;
   margin: 10px 0 15px;
   resize: vertical;
+  font-family: "IRANYekanWebFn-Light" !important;
 }
 
 .ask-tags {
@@ -563,6 +592,7 @@ a {
   margin: 10px 0 15px;
   height: 200px;
   resize: none;
+  font-family: "IRANYekanWebFn-Light" !important;
 }
 
 .ask-description {
@@ -588,6 +618,7 @@ a {
   margin: 10px 0 15px;
   height: 40px;
   resize: none;
+  font-family: "IRANYekanWebFn-Light" !important;
 }
 
 .success-actions {
@@ -641,6 +672,7 @@ a {
   line-height: 25px;
   border: 0;
   margin-top: 10px;
+  font-family: "IRANYekanWebFn-Light" !important;
 }
 
 .breadcrumb {
@@ -648,6 +680,7 @@ a {
   background-color: unset !important;
   text-align: left;
   direction: ltr;
+  font-family: "IRANYekanWebFn-Light";
 }
 
 .breadcrumb a {
@@ -1055,6 +1088,7 @@ a {
 
 .edit-box-input + label {
   padding: 5px 10px;
+  font-family: "IRANYekanWebFn-Light" !important;
   color: white;
   background-color: rgb(41, 165, 141);
   display: inline-block;

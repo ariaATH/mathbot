@@ -1,3 +1,4 @@
+$font-family-IRANYekan: "IRANYekanWebFn-Light" !important;
 $font-size-medium: 14px;
 $font-size-little: 12px;
 
@@ -21,6 +22,7 @@ $font-size-little: 12px;
     height: 40px;
     resize: none;
     direction: ltr;
+    font-family: $font-family-IRANYekan;
 }
 
 .ask-input-description {
@@ -34,6 +36,7 @@ $font-size-little: 12px;
     border-radius: 10px;
     margin: 10px 0 15px;
     resize: vertical;
+    font-family: $font-family-IRANYekan;
 }
 
 .ask-tags {
@@ -61,6 +64,7 @@ $font-size-little: 12px;
     margin: 10px 0 15px;
     height: 200px;
     resize: none;
+    font-family: "IRANYekanWebFn-Light" !important;
 }
 
 .ask-description {
@@ -86,6 +90,7 @@ $font-size-little: 12px;
     margin: 10px 0 15px;
     height: 40px;
     resize: none;
+    font-family: $font-family-IRANYekan;
 }
 
 .success-actions {
@@ -139,6 +144,7 @@ $font-size-little: 12px;
     line-height: 25px;
     border: 0;
     margin-top: 10px;
+    font-family: $font-family-IRANYekan;
 }
 
 .breadcrumb {
@@ -146,6 +152,7 @@ $font-size-little: 12px;
     background-color: unset !important;
     text-align: left;
     direction: ltr;
+    font-family: "IRANYekanWebFn-Light";
 }
 
 .breadcrumb a {

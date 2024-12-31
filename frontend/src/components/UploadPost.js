@@ -2,15 +2,13 @@ import React, { useState } from 'react';
 import { Link } from "react-router-dom";
 import config from '../utils/config.js';
 import IsAuthenticated from "../utils/IsAuthenticated.js";
-import { CKEditor } from '@ckeditor/ckeditor5-react';
-import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 
 function UploadPost() {
 
-    const [content, setContent] = useState()
     const [dataToUpload, setDataToUpload] = useState({
         title: '',
         image: '',
+        content: '',
     })
     const [imagePreview, setImagePreview] = useState(null)
     const [theTag, settheTag] = useState()
@@ -43,7 +41,7 @@ function UploadPost() {
 
         let form_data = new FormData();
         form_data.append("title", dataToUpload.title);
-        form_data.append("content", content);
+        form_data.append("content", dataToUpload.content);
         form_data.append("image", dataToUpload.image);
         form_data.append("tags", tags.toString());
 
@@ -143,14 +141,7 @@ function UploadPost() {
                                     
                             <h4>* توضیحات</h4>
                             <div className="ask-description">
-                                <CKEditor
-                                    name="content"
-                                    editor={ ClassicEditor }
-                                    onChange={ ( event, editor ) => {
-                                    const data = editor.getData();
-                                    setContent(data)
-                                    } }
-                                />
+                                <textarea className='ask-description-textarea' name="content" onChange={handleChange}></textarea>
                             </div>
         
                             <div className="ask-tags">

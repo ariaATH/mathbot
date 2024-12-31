@@ -1,5 +1,7 @@
 /* Account */
 
+$font-family-IRANYekan: "IRANYekanWebFn-Light" !important;
+
 .account {
     background: #212226;
     padding: 15px 0px 15px 0px;
@@ -89,6 +91,7 @@
 
 .edit-box-input + label {
     padding: 5px 10px;
+    font-family: $font-family-IRANYekan;
     color: white;
     background-color: rgb(41, 165, 141);
     display: inline-block;
