@@ -51,14 +51,8 @@ INSTALLED_APPS = [
 ]
 
 REST_FRAMEWORK = {
-    'DEFAULT_RENDERER_CLASSES': [
-        'rest_framework.renderers.JSONRenderer',
-    ],
-    'DEFAULT_SCHEMA_CLASS': 'rest_framework.schemas.coreapi.AutoSchema',
     'DATETIME_FORMAT': "%Y/%m/%d (%H:%M:%S)",
 }
-
-DEFAULT_DOMAIN = "https://server.mathbot.ir"
 
 from datetime import timedelta
 
