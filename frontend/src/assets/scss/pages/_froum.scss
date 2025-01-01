@@ -21,7 +21,6 @@ $font-size-little: 12px;
     margin: 10px 0 15px;
     height: 40px;
     resize: none;
-    direction: ltr;
     font-family: $font-family-IRANYekan;
 }
 
@@ -150,8 +149,6 @@ $font-size-little: 12px;
 .breadcrumb {
     padding: 1px 15px 1px 15px !important;
     background-color: unset !important;
-    text-align: left;
-    direction: ltr;
     font-family: "IRANYekanWebFn-Light";
 }
 
@@ -179,7 +176,6 @@ $font-size-little: 12px;
 .post-box h4 {
     font-weight: 600;
     line-height: 30px;
-    text-align: left;
     direction: ltr;
 }
 
@@ -340,8 +336,6 @@ $font-size-little: 12px;
 
 .forum-title-postBox h3 {
     line-height: 30px;
-    text-align: left;
-    direction: ltr;
 }
 
 .forum-title-posts {
@@ -365,8 +359,6 @@ $font-size-little: 12px;
 
 .post-content-box {
     margin-top: 10px;
-    text-align: left;
-    direction: ltr;
 }
 
 .comment-button {
