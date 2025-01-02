@@ -574,8 +574,7 @@ a {
   box-sizing: border-box;
   font-size: 14px;
   border-radius: 10px;
-  margin: 10px 0 15px;
-  height: 200px;
+  height: 100px;
   resize: none;
   font-family: "IRANYekanWebFn-Light" !important;
 }
@@ -651,7 +650,7 @@ a {
   background: #29a58d;
   color: #fff;
   border-radius: 10px;
-  padding: 10px 20px;
+  padding: 5px 25px;
   text-align: center;
   text-decoration: none;
   line-height: 25px;
@@ -687,7 +686,7 @@ a {
   transition: all 0.2s ease;
 }
 
-.post-box h4 {
+.post-title {
   font-weight: 600;
   line-height: 30px;
 }
@@ -705,9 +704,13 @@ a {
 .post-box-big {
   background: #212226;
   box-shadow: 0 5px 10px 0 rgba(20, 83, 155, 0.05);
-  padding: 5px 25px 10px 25px;
+  padding: 10px 15px 10px 15px;
   border-radius: 10px;
   margin-bottom: 20px;
+}
+
+.post-created-at {
+  font-size: 12px;
 }
 
 .post-box-big-p {
@@ -763,20 +766,6 @@ a {
 }
 
 .post-tags {
-  background: #29a58d none repeat scroll 0% 0%;
-  padding: 5px 10px;
-  margin-left: 5px;
-  border-radius: 5px;
-  color: #fff;
-  font-size: 12px;
-  display: inline-block;
-}
-
-.post-tag-box {
-  margin: 20px 0 15px 0;
-}
-
-.post-tags-homepage {
   padding: 0 5px;
   max-width: max-content;
   display: inline-block;
@@ -785,17 +774,6 @@ a {
   font-family: "IRANYekanWebFn-Light" !important;
   color: #fff;
   margin: 8px 0 0 5px;
-}
-
-.post-tags-homepage-mobile-display {
-  background: rgb(242, 242, 242) none repeat scroll 0% 0%;
-  border-radius: 5px;
-  color: rgb(117, 117, 117);
-  font-family: "IRANYekanWebFn-Light" !important;
-  padding: 0 5px;
-  max-width: max-content;
-  display: inline-block;
-  margin-left: 5px;
 }
 
 .post-date {
@@ -855,8 +833,8 @@ a {
 
 .forum-title-posts {
   position: relative;
-  margin-bottom: 40px;
-  margin-top: 40px;
+  margin-bottom: 20px;
+  margin-top: 20px;
 }
 
 .post-img-box {
@@ -873,6 +851,7 @@ a {
 }
 
 .post-content-box {
+  margin-bottom: 15px;
   margin-top: 10px;
 }
 

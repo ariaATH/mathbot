@@ -45,7 +45,7 @@ function PostsListHomePage() {
                             </div>
                         </div>
                         <Link className="post-box-link" to={`/posts/${data.id}`}>
-                            <h4>{data.title}</h4>
+                            <h4 className="post-title">{data.title}</h4>
                             {data.image != null ? (
                                 <div className="post-img-box">
                                     <img loading="lazy" src={data.image} className="post-img" alt={data.title} />
@@ -59,7 +59,7 @@ function PostsListHomePage() {
                         <div className="row post-box-bottom">
                             <div className="col-md-8 col-xs-8">
                                 {data.tags.split(",").map((e) => (
-                                    <div className="post-tags-homepage">{e}</div>
+                                    <div className="post-tags">{e}</div>
                                 ))}
                             </div>
                             <div className="col-md-4 col-xs-s">

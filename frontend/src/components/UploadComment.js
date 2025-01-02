@@ -44,6 +44,7 @@ function UploadComment(props) {
             <form onSubmit={handleSubmit}>
                 <div className="ask-description">
                   <textarea
+                    placeholder="نظر خود را درباره این پست بنویسید"
                     className='ask-description-textarea'
                     name="content"
                     onChange={handleChange}
