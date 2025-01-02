@@ -8,7 +8,7 @@ from rest_framework.permissions import (
 User = get_user_model()
 
 from .serializers import UserCreateSerializer, UserDetailSerializer, UserUpdateSerializer
-from .permissions import IsOwnerOrAdmin
+from permissions import IsOwnerOrAdmin
 
 class UserCreateAPIView(generics.CreateAPIView):
     serializer_class = UserCreateSerializer
