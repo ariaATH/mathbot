@@ -42,14 +42,6 @@ a {
   text-decoration: none !important;
 }
 
-.post-box-bottom-mobile-display {
-  display: none;
-}
-
-.post-box-bottom-mobile-display {
-  padding: 5px 0px 5px 0;
-}
-
 .number-of-comments-homepage {
   float: left;
   margin: 5px;
@@ -182,12 +174,6 @@ a {
   }
 }
 @media only screen and (max-width: 1200px) {
-  .post-box-bottom {
-    display: none;
-  }
-  .post-box-bottom-mobile-display {
-    display: block;
-  }
   .our-team-img {
     width: 150px !important;
     height: 150px !important;
@@ -691,7 +677,7 @@ a {
 .post-box {
   color: #fff;
   background: #212226;
-  padding: 5px 15px 5px 15px;
+  padding: 15px;
   border-radius: 10px;
   margin-bottom: 10px;
   transition: all 0.2s ease;
@@ -709,7 +695,7 @@ a {
 .post-box p {
   text-align: justify;
   line-height: 22px;
-  font-size: 12px;
+  font-size: 15px;
 }
 
 .post-box-bottom {
@@ -796,6 +782,7 @@ a {
   display: inline-block;
   background: #29a58d none repeat scroll 0% 0%;
   border-radius: 5px;
+  font-family: "IRANYekanWebFn-Light" !important;
   color: #fff;
   margin: 8px 0 0 5px;
 }
@@ -804,6 +791,7 @@ a {
   background: rgb(242, 242, 242) none repeat scroll 0% 0%;
   border-radius: 5px;
   color: rgb(117, 117, 117);
+  font-family: "IRANYekanWebFn-Light" !important;
   padding: 0 5px;
   max-width: max-content;
   display: inline-block;
@@ -873,8 +861,8 @@ a {
 
 .post-img-box {
   text-align: center;
-  margin-top: 15px;
-  margin-bottom: 15px;
+  margin-top: 10px;
+  margin-bottom: 10px;
   border-radius: 10px;
   background: #000;
 }
