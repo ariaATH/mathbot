@@ -66,10 +66,6 @@ function Posts() {
                         <div className="container">
                             <div className="col-md-12 responsive-box">
 
-                            <div className="breadcrumb">
-                                <h6><Link to="/">انجمن</Link> / <Link to={`/posts/${data.id}`}>{data.title}</Link></h6>
-                            </div>
-
                             <div className="col-md-3 responsive-box">
                                 <LeftSidebar />
                             </div>
