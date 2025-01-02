@@ -20,7 +20,8 @@ class UserProfile(models.Model):
     links_github = models.CharField(max_length=30)
     links_linkedin = models.CharField(max_length=30)
     company = models.TextField()
-    personal_info = models.TextField()
+    phone_number = models.CharField(max_length=9)
+    location = models.CharField(max_length=30)
     team = models.ForeignKey(Team,null=True,blank=True,on_delete=models.SET_NULL,related_name='participants')
     is_admin = models.BooleanField(default=False,blank=True)
   
