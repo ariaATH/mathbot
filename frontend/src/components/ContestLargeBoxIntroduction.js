@@ -6,7 +6,7 @@ function ContestLargeBoxIntroduction() {
     return (
         <>
             <div className="col-md-12 col-xs-12 responsive-box">
-                <div className="post-box">
+                <div className="contest-homepage">
                     <div className="row">
                         <div className="col-md-10 col-xs-12">
                             <h5>مسابقه هفتگی مث بات دوره اول</h5>
