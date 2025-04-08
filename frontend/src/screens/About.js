@@ -23,32 +23,25 @@ class About extends Component {
                         <h1 className="about-title">تیم ما</h1>
                             <p className="about-description">اگر علاقه مند به عضویت در تیم ما و کار روی پروژه های اپن سورس دارید با ما ارتباط بگیرید</p>
                             <div className="row">
-                                <div className="col-md-3 col-sm-6">
+                                <div className="col-md-4 col-sm-4">
                                     <div className="our-team-box">
                                         <img src={Hossein} className="our-team-img" alt="Hossein Akbari" />
                                         <h3>Hossein Akbari</h3>
                                         <h4>Full-stack Developer</h4>
                                     </div>
                                 </div>
-                                <div className="col-md-3 col-sm-6">
+                                <div className="col-md-4 col-sm-4">
                                     <div className="our-team-box">
                                         <img src={Maziar} className="our-team-img" alt="Maziar Heidari" />
                                         <h3>Maziar Heidari</h3>
                                         <h4>Backend Developer</h4>
                                     </div>
                                 </div>
-                                <div className="col-md-3 col-sm-6">
+                                <div className="col-md-4 col-sm-4">
                                     <div className="our-team-box">
                                         <img src={Olia} className="our-team-img" alt="Olia Abbasi" />
                                         <h3>Olia Abbasi</h3>
-                                        <h4>UX UI designer</h4>
-                                    </div>
-                                </div>
-                                <div className="col-md-3 col-sm-6">
-                                    <div className="our-team-box">
-                                        <img src={MohammadReza} className="our-team-img" alt="MohammadReza Taheri" />
-                                        <h3>MohammadReza Taheri</h3>
-                                        <h4>Frontend Developer</h4>
+                                        <h4>Logo designer</h4>
                                     </div>
                                 </div>
                             </div>                            
