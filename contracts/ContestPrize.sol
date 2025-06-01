@@ -43,7 +43,7 @@ contract ContestPrize is Ownable {
         Components[_ID].status = false;
     }
 
-    receive() external payable;
+    receive() external payable{}
     
     function getcomptotal(uint _ID) external view CheckSameId(_ID) returns(uint){
             return Components[_ID].Total_amount;
