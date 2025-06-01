@@ -24,8 +24,6 @@ contract ContestPrize is Ownable {
         _;
     }
 
-    event Received(address indexed sender, uint amount);
-
     function Addcomp(uint _ID, uint _Price) external onlyOwner CheckSameId(_ID) {
         Components[_ID] = comp(_ID, 0, _Price, true);
     }
@@ -45,9 +43,8 @@ contract ContestPrize is Ownable {
         Components[_ID].status = false;
     }
 
-    receive() external payable {
-        emit Received(msg.sender, msg.value);
-    }
+    receive() external payable;
+    
     function getcomptotal(uint _ID) external view CheckSameId(_ID) returns(uint){
             return Components[_ID].Total_amount;
     }
