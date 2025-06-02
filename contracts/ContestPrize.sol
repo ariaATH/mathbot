@@ -16,12 +16,12 @@ contract ContestPrize is Ownable {
     mapping(uint => comp) Components;
 
     modifier CheckActive(uint id) {
-        require(Components[id].status == false, "component finished");
+        require(Components[id].status == true, "component finished");
         _;
     }
 
     modifier CheckSameId(uint id) {
-        require(Components[id].ID == 0, "invalid ID");
+        require(Components[id].ID != 0, "invalid ID");
         _;
     }
 
