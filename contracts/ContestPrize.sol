@@ -22,7 +22,7 @@ contract ContestPrize is Ownable {
     }
 
     modifier CheckSameId(uint id) {
-        require(Components[id].exist, "invalid ID");
+        require(!Components[id].exist, "invalid ID");
         _;
     }
 
@@ -37,7 +37,7 @@ contract ContestPrize is Ownable {
     }
 
     //This function is for determining the total budget of a competition and get ID and The number of contestants
-    function Deposit(uint _ID , uint _cnt) external payable CheckActive(_ID) {
+    function Deposit(uint _ID , uint _cnt) external payable CheckActive(_ID) onlyOwner() {
         Components[_ID].Total_amount += (Components[_ID].Price * _cnt);
     }
 
