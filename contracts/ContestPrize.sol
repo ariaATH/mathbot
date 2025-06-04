@@ -11,6 +11,7 @@ contract ContestPrize is Ownable {
         uint256 Total_amount;
         uint256 Price;
         bool status;
+        bool exist;
     }
     // for save each contest wtih ID
     mapping(uint => comp) Components;
@@ -21,13 +22,13 @@ contract ContestPrize is Ownable {
     }
 
     modifier CheckSameId(uint id) {
-        require(Components[id].ID != 0, "invalid ID");
+        require(Components[id].exist, "invalid ID");
         _;
     }
 
     // This function is used to define a contest and takes the ID and cost of participating in the contest.
     function Addcomp(uint _ID, uint _Price) external onlyOwner CheckSameId(_ID) {
-        Components[_ID] = comp(_ID, 0, _Price, true);
+        Components[_ID] = comp(_ID, 0, _Price, true , true);
     }
 
     //This function is for determining the total budget of a competition and get ID and The number of contestants
