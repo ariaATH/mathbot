@@ -26,9 +26,14 @@ contract ContestPrize is Ownable {
         _;
     }
 
+    event ContestCreated(uint ID, uint Price);
+
+    event WinnersAwarded(uint ID, address first, address second, address third);
+
     // This function is used to define a contest and takes the ID and cost of participating in the contest.
     function Addcomp(uint _ID, uint _Price) external onlyOwner CheckSameId(_ID) {
         Components[_ID] = comp(_ID, 0, _Price, true , true);
+        emit ContestCreated(_ID , _Price);
     }
 
     //This function is for determining the total budget of a competition and get ID and The number of contestants
@@ -43,6 +48,7 @@ contract ContestPrize is Ownable {
         _first.transfer((award * 30) / 100);
         _second.transfer((award * 20) / 100);
         _Third.transfer((award * 10) / 100);
+        emit WinnersAwarded(_ID , _first , _second , _Third);
 
         Components[_ID].Total_amount -= (award * 60) / 100;
         Components[_ID].status = false;
