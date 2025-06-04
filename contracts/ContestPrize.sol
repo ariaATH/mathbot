@@ -59,12 +59,17 @@ contract ContestPrize is Ownable {
     // Distributes the prizes of a contest according to the percentage of entries.
     function AwardWithPercentage(address payable _first, address payable _second,address payable _Third , uint percent1 , uint percent2 , uint percent3 , uint _ID)external CheckSameId(_ID) CheckActive(_ID) onlyOwner {
         uint sum = percent1 + percent2 + percent3;
-        require(sum > 100 , "Wrong percentages");
+        require(sum <= 100 , "Wrong percentages");
         uint award = Components[_ID].Total_amount;
          _first.transfer((award * percent1) / 100);
         _second.transfer((award * percent2) / 100);
         _Third.transfer((award * percent3) / 100);
         Components[_ID].Total_amount -= (award * sum) / 100;
         Components[_ID].status = false;
+    }
+    // This function is for withdrawing the organizer's share of the prize after the competition ends.
+    function withdrawOwner(address payable _to , uint _ID) external onlyOwner(){
+        require(Components[_ID].status == false , "Components is not over");
+        _to.transfer(Components[_ID].Total_amount);
     }
 }
