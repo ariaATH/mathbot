@@ -8,3 +8,5 @@ OWNER_ADDRESS = os.getenv("OWNER_ADDRESS")
 RPC_URL = os.getenv("RPC_URL")
 
 address_node = Web3(Web3.HTTPProvider(RPC_URL))
+
+contract = address_node.eth.contract(address=contract_address, abi=contract_abi)
