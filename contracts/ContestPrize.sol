@@ -63,6 +63,15 @@ contract ContestPrize is Ownable {
         require(Components[_ID].exist == true , "invalid ID");
         return Components[_ID].Total_amount;
     }
+    //  just return Running or finished competition
+    function getcompstatus(uint _ID) external view returns(bool){
+        require(Components[_ID].exist == true , "invalid ID");
+        return Components[_ID].status;
+    }
+    // Checks whether or not there is a match with this ID.
+    function getcompexist(uint _ID) external view returns(bool){
+        return Components[_ID].exist;
+    }
 
     // Distributes the prizes of a contest according to the percentage of entries.
     function AwardWithPercentage(address payable _first, address payable _second,address payable _Third , uint percent1 , uint percent2 , uint percent3 , uint _ID)external CheckActive(_ID) onlyOwner {
