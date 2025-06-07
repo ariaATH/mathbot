@@ -38,3 +38,4 @@ __pycache__/
 # uploads
 backend/uploads/userprofiles
 backend/uploads/postimages
+backend/API/private.env
