@@ -8,7 +8,3 @@ class Contest(models.Model):
     created_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name="contests")
     image = models.ImageField(upload_to='contestimages')
     price = models.TextField()
-   
-
-class Team(models.Model):
-    name = models.CharField(max_length=100)
