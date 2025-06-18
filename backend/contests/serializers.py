@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Contest, Team, Participation
+from .models import Contest, Participation
 
 
 class ParticipationSerializer(serializers.ModelSerializer):
@@ -21,14 +21,3 @@ class ContestListSerializer(serializers.ModelSerializer):
     
     def get_participation_count(self, obj):
         return obj.participations.count()
-
-
-class TeamListSerializer(serializers.ModelSerializer):
-    participants = serializers.SerializerMethodField(read_only=True)
-    class Meta:
-        model = Team
-        fields = ['name','participants']
-
-    def get_participants(self,obj):
-        return obj.participants.values_list('user__username',flat=True)
-            
