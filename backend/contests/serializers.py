@@ -1,5 +1,6 @@
 from rest_framework import serializers
-from .models import Contest, Participation
+from .models import Contest, Team, Participation
+from django.utils import timezone
 
 
 class ParticipationSerializer(serializers.ModelSerializer):
@@ -9,6 +10,22 @@ class ParticipationSerializer(serializers.ModelSerializer):
         model = Participation
         fields = ['username', 'joined_at']
         read_only_fields = ['joined_at']
+
+
+class ContestSignupSerializer(serializers.Serializer):
+    def validate(self, data):
+        contest = self.context['contest']
+        user = self.context['request'].user
+        
+        # Check if user is already participating
+        if Participation.objects.filter(contest=contest, user=user).exists():
+            raise serializers.ValidationError("شما قبلا در این مسابقه ثبت نام کرده‌اید")
+        
+        # Check if contest has started
+        if contest.start_time <= timezone.now():
+            raise serializers.ValidationError("زمان ثبت نام این مسابقه به پایان رسیده است")
+            
+        return data
 
 
 class ContestListSerializer(serializers.ModelSerializer):

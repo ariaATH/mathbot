@@ -1,9 +1,9 @@
 from rest_framework import generics
-from .models import Contest
+from .models import Contest, Participation
 from rest_framework.permissions import IsAuthenticated
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from permissions import IsOwnerOrAdmin
-from .serializers import ContestListSerializer
+from .serializers import ContestListSerializer, ContestSignupSerializer
 from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -34,4 +34,21 @@ class ContestsDeleteAPIView(generics.DestroyAPIView):
     # serializer_class = PostSerializer
     permission_classes = [IsOwnerOrAdmin]
     authentication_classes = [JWTAuthentication]
+
+class ContestSignupAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+    authentication_classes = [JWTAuthentication]
+
+    def post(self, request, pk):
+        contest = get_object_or_404(Contest, pk=pk)
+        serializer = ContestSignupSerializer(data={}, context={'contest': contest, 'request': request})
+        
+        if serializer.is_valid():
+            # Create participation
+            Participation.objects.create(contest=contest, user=request.user)
+            return Response({
+                'message': 'ثبت نام در مسابقه با موفقیت انجام شد'
+            }, status=status.HTTP_201_CREATED)
+            
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
