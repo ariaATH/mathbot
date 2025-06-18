@@ -20,7 +20,6 @@ class UserProfile(models.Model):
     company = models.TextField(blank=True, null=True)
     phone_number = models.CharField(max_length=9, blank=True, null=True)
     location = models.CharField(max_length=30, blank=True, null=True)
-    is_admin = models.BooleanField(default=False,blank=True)
   
     def __str__(self):
         return self.user.username
