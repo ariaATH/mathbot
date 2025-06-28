@@ -1,4 +1,5 @@
 from .web3_config import address_node
-contract_address = address_node.to_checksum_address("write address")
+import json
 
-contract_abi = "your abi"
+contract_address = address_node.to_checksum_address("write address")
+contract_abi = json.loads('ABI')
