@@ -13,7 +13,7 @@ w3 = Web3(address_node)
 contract = address_node.eth.contract(address=contract_address, abi=contract_abi)
 
 # create a transaction to send ether to the contract from user get user address and component price
-def create_Tx(value , user_address):
+def create_Tx_metamask(value , user_address):
     tx = {
       'to' : contract_address,
       'value' : hex(w3.to_wei(value , 'ether')),
