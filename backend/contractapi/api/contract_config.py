@@ -52,7 +52,7 @@ def AwardWithPercentage(address_1 , address_2 , address_3 ,percent_1 , percent_2
     tx_hash = w3.eth.send_raw_transaction(sign_tx.rawTransaction)
     return w3.to_hex(tx_hash)
 
-def Awardwinners(address , ID):
+def withdrawOwner(address , ID):
     tx = contract.functions.withdrawOwner(address , int(ID)).build_transaction({
         'from':owner_address ,
         'gas': 100000,

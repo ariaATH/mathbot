@@ -2,7 +2,7 @@ from django.shortcuts import render
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from api.web3_config_payment import Createcomp, Createcompfree, Awardwinners, AwardWithPercentage , Awardwinners , comptotal , compstatus , compexist
+from api.web3_config_payment import Createcomp, Createcompfree, Awardwinners, AwardWithPercentage , withdrawOwner , comptotal , compstatus , compexist
 
 
 class CreateCompView(APIView):
@@ -74,7 +74,7 @@ class WithdrawWinnersView(APIView):
             if not address or not ID:
                 return Response({"error": "Address and ID are required."}, status=status.HTTP_400_BAD_REQUEST)
 
-            tx_hash = Awardwinners(address, ID)
+            tx_hash = withdrawOwner(address, ID)
             return Response({"transaction_hash": tx_hash}, status=status.HTTP_200_OK)
         except Exception as e:
             return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
