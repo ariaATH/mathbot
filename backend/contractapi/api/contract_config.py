@@ -11,7 +11,7 @@ nonce_owner = w3.eth.get_transaction_count(owner_address)
 def Createcomp(ID , Price):
     tx = contract.functions.Addcomp(int(ID) , Price).build_transaction({
         'from':owner_address ,
-        'gas': 100000,
+        'gas': 1000000,
         'gasPrice': w3.eth.gas_price,
         'nonce': nonce_owner
     })
@@ -22,7 +22,7 @@ def Createcomp(ID , Price):
 def Createcompfree(ID):
     tx = contract.functions.Addfreecomp(int(ID)).build_transaction({
         'from':owner_address ,
-        'gas': 100000,
+        'gas': 1000000,
         'gasPrice': w3.eth.gas_price,
         'nonce': nonce_owner
     })
@@ -33,7 +33,7 @@ def Createcompfree(ID):
 def Awardwinners(address_1 , address_2 , address_3 , ID ):
     tx = contract.functions.Awardwinners(address_1 , address_2 , address_3 , int(ID) ).build_transaction({
         'from':owner_address ,
-        'gas': 100000,
+        'gas': 1000000,
         'gasPrice': w3.eth.gas_price,
         'nonce': nonce_owner
     })
@@ -44,7 +44,7 @@ def Awardwinners(address_1 , address_2 , address_3 , ID ):
 def AwardWithPercentage(address_1 , address_2 , address_3 ,percent_1 , percent_2 , percent_3 , ID ):
     tx = contract.functions.Awardwinners(address_1 , address_2 , address_3 ,int(percent_1) , int(percent_2) , int(percent_3) , int(ID) ).build_transaction({
         'from':owner_address ,
-        'gas': 100000,
+        'gas': 1000000,
         'gasPrice': w3.eth.gas_price,
         'nonce': nonce_owner
     })
@@ -55,7 +55,7 @@ def AwardWithPercentage(address_1 , address_2 , address_3 ,percent_1 , percent_2
 def withdrawOwner(address , ID):
     tx = contract.functions.withdrawOwner(address , int(ID)).build_transaction({
         'from':owner_address ,
-        'gas': 100000,
+        'gas': 1000000,
         'gasPrice': w3.eth.gas_price,
         'nonce': nonce_owner
     })
