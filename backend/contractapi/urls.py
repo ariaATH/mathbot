@@ -10,4 +10,5 @@ urlpatterns = [
     path('comp-total/', CompTotalView.as_view(), name='comp_total'),
     path('comp-status/', CompStatusView.as_view(), name='comp_status'),
     path('comp-exist/', CompExistView.as_view(), name='comp_exist'),
+    path('create-tx-metamask/', CreateTxView.as_view(), name='create_tx'),
 ]
