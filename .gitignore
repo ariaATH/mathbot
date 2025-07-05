@@ -39,4 +39,4 @@ __pycache__/
 backend/uploads/userprofiles
 backend/uploads/postimages
 backend/API/private.env
-contracts/api/private.env
+backend/contractapi/api/private.env
