@@ -3,6 +3,8 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from api.web3_config_payment import Createcomp, Createcompfree, Awardwinners, AwardWithPercentage , withdrawOwner , comptotal , compstatus , compexist
+from api.web3_config_payment import create_Tx_metamask
+import json
 import os
 
 class CreateCompView(APIView):
@@ -117,3 +119,17 @@ class CompExistView(APIView):
 
         except Exception as e:
             return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+# frontend view for creating a transaction using Metamask frontend send a post request with user_address and value
+# and it will return the transaction hash with json format
+class CreateTxView(APIView):
+    def post(self, request):
+        value = request.data.get('value')
+        user_address = request.data.get('user_address')
+        if not value or not user_address:
+            return Response({'error': 'Value and user_address required'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        try:
+            tx = create_Tx_metamask(value, user_address)
+            return Response(json.loads(tx))
+        except Exception as e:
+            return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
