@@ -9,6 +9,7 @@ owner_address = address_node.to_checksum_address(OWNER_ADDRESS)
 nonce_owner = w3.eth.get_transaction_count(owner_address)
 
 def Createcomp(ID , Price):
+    Price = address_node.to_wei(Price , 'ether')
     tx = contract.functions.Addcomp(int(ID) , Price).build_transaction({
         'from':owner_address ,
         'gas': 1000000,
