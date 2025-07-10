@@ -153,6 +153,21 @@ contract ContestPrize is Ownable {
         Components[ID_comp].status = false;
     }
 
+    // Prize distribution for competitions with arbitrary prizes Each person
+    // takes a presentation of the winners and a presentation of the prizes and distributes the prizes.
+    function Awardforarbitrary_comp(
+        address payable[] calldata winners,
+        uint[] calldata prize,
+        uint ID
+    ) external onlyOwner CheckActive(ID) {
+        require(winners.length == prize.length, "Length mismatch");
+        for (uint i = 0; i < winners.length; i++) {
+            require(winners[i] != address(0), "invalid address");
+            winners[i].transfer(prize[i]);
+        }
+        Components[ID].status = false;
+    }
+
     // This function is for withdrawing the organizer's share of the prize after the competition ends.
     function withdrawOwner(address payable _to, uint _ID) external onlyOwner {
         require(Components[_ID].status == false, "Components is not over");
