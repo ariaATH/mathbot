@@ -45,6 +45,7 @@ contract ContestPrize is Ownable {
     }
 
     //This function is for determining the total budget of a competition and get ID and The number of contestants
+    //this is not for free comp
     function Deposit(
         uint _ID,
         uint _cnt
@@ -117,14 +118,38 @@ contract ContestPrize is Ownable {
         Components[_ID].status = false;
     }
 
+    // function for freecomp and 3 person winner get: It takes the addresses of the
+    //top 3 people and the amount of Ethereum awarded to each of them and distributes the prizes.
+    function Awardforfree_comp(
+        address payable _first,
+        address payable _second,
+        address payable _Third,
+        uint value_first,
+        uint value_second,
+        uint value_Third,
+        uint ID
+    ) external onlyOwner CheckActive(ID) {
+        require(
+            _first != address(0) &&
+                _second != address(0) &&
+                _Third != address(0),
+            "Invalid address"
+        );
+        require(Components[ID].exist == true, "invalid ID");
+        _first.transfer(value_first);
+        _second.transfer(value_second);
+        _Third.transfer(value_Third);
+        Components[ID].status = false;
+    }
+
+    // this function Get the winner's address and ID for the duel competition and give her the prize for the duel competition.
     function Awardforduel_comp(
         address payable _first,
-        uint256 value,
         uint256 ID_comp
     ) external onlyOwner CheckActive(ID_comp) {
         require(_first != address(0), "Invalid address");
         require(Components[ID_comp].exist == true, "invalid ID");
-        _first.transfer(value);
+        _first.transfer(Components[ID_comp].Total_amount);
         Components[ID_comp].status = false;
     }
 
