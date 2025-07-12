@@ -80,23 +80,6 @@ contract ContestPrize is Ownable {
     // just for get ether
     receive() external payable {}
 
-    // return total budget of a contest with get ID
-    function getcomptotal(uint _ID) external view returns (uint) {
-        require(Components[_ID].exist == true, "invalid ID");
-        return Components[_ID].Total_amount;
-    }
-
-    //  just return Running or finished competition
-    function getcompstatus(uint _ID) external view returns (bool) {
-        require(Components[_ID].exist == true, "invalid ID");
-        return Components[_ID].status;
-    }
-
-    // Checks whether or not there is a match with this ID.
-    function getcompexist(uint _ID) external view returns (bool) {
-        return Components[_ID].exist;
-    }
-
     // Distributes the prizes of a contest according to the percentage of entries.
     function AwardWithPercentage(
         address payable _first,
@@ -172,5 +155,22 @@ contract ContestPrize is Ownable {
     function withdrawOwner(address payable _to, uint _ID) external onlyOwner {
         require(Components[_ID].status == false, "Components is not over");
         _to.transfer(Components[_ID].Total_amount);
+    }
+
+    // return total budget of a contest with get ID
+    function getcomptotal(uint _ID) external view returns (uint) {
+        require(Components[_ID].exist == true, "invalid ID");
+        return Components[_ID].Total_amount;
+    }
+
+    //  just return Running or finished competition
+    function getcompstatus(uint _ID) external view returns (bool) {
+        require(Components[_ID].exist == true, "invalid ID");
+        return Components[_ID].status;
+    }
+
+    // Checks whether or not there is a match with this ID.
+    function getcompexist(uint _ID) external view returns (bool) {
+        return Components[_ID].exist;
     }
 }

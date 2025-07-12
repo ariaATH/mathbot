@@ -32,6 +32,9 @@ def Createcompfree(ID):
     return w3.to_hex(tx_hash)
 
 def Awardwinners(address_1 , address_2 , address_3 , ID ):
+    address_1 = address_node.to_checksum_address(address_1)
+    address_2 = address_node.to_checksum_address(address_2)
+    address_3 = address_node.to_checksum_address(address_3)
     tx = contract.functions.Awardwinners(address_1 , address_2 , address_3 , int(ID) ).build_transaction({
         'from':owner_address ,
         'gas': 1000000,
@@ -43,7 +46,10 @@ def Awardwinners(address_1 , address_2 , address_3 , ID ):
     return w3.to_hex(tx_hash)
 
 def AwardWithPercentage(address_1 , address_2 , address_3 ,percent_1 , percent_2 , percent_3 , ID ):
-    tx = contract.functions.Awardwinners(address_1 , address_2 , address_3 ,int(percent_1) , int(percent_2) , int(percent_3) , int(ID) ).build_transaction({
+    address_1 = address_node.to_checksum_address(address_1)
+    address_2 = address_node.to_checksum_address(address_2)
+    address_3 = address_node.to_checksum_address(address_3)
+    tx = contract.functions.AwardWithPercentage(address_1 , address_2 , address_3 ,int(percent_1) , int(percent_2) , int(percent_3) , int(ID) ).build_transaction({
         'from':owner_address ,
         'gas': 1000000,
         'gasPrice': w3.eth.gas_price,
@@ -54,6 +60,7 @@ def AwardWithPercentage(address_1 , address_2 , address_3 ,percent_1 , percent_2
     return w3.to_hex(tx_hash)
 
 def Awardforduel_comp(address_1 , ID ):
+    address_1 = address_node.to_checksum_address(address_1)
     tx = contract.functions.Awardforduel_comp(address_1 , int(ID) ).build_transaction({
         'from':owner_address ,
         'gas': 1000000,
@@ -81,6 +88,8 @@ def Awardforfree_comp(address_1 , address_2 , address_3 ,value_1 , value_2 , val
 def Awardforarbitrary_comp(winners_array , prize_array , ID):
     for i in range(len(prize_array)) :
         prize_array[i] = address_node.to_wei(prize_array[i] , 'ether')
+    for j in range(len(winners_array)) :
+        winners_array[j] = address_node.to_checksum_address(winners_array[j])
     tx = contract.functions.Awardforarbitrary_comp(winners_array , prize_array , ID).build_transaction({
         'from':owner_address ,
         'gas': 1000000,
@@ -93,6 +102,7 @@ def Awardforarbitrary_comp(winners_array , prize_array , ID):
     return w3.to_hex(tx_hash)
 
 def withdrawOwner(address , ID):
+    address = address_node.to_checksum_address(address)
     tx = contract.functions.withdrawOwner(address , int(ID)).build_transaction({
         'from':owner_address ,
         'gas': 1000000,
