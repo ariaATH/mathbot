@@ -122,6 +122,9 @@ contract ContestPrize is Ownable {
         _first.transfer(value_first);
         _second.transfer(value_second);
         _Third.transfer(value_Third);
+        Components[ID].Total_amount -= (value_first +
+            value_second +
+            value_Third);
         Components[ID].status = false;
     }
 
@@ -132,7 +135,9 @@ contract ContestPrize is Ownable {
     ) external onlyOwner CheckActive(ID_comp) {
         require(_first != address(0), "Invalid address");
         require(Components[ID_comp].exist == true, "invalid ID");
-        _first.transfer(Components[ID_comp].Total_amount);
+        uint value = (Components[ID_comp].Total_amount * 90) / 100;
+        _first.transfer(value);
+        Components[ID_comp].Total_amount -= value;
         Components[ID_comp].status = false;
     }
 
@@ -147,6 +152,7 @@ contract ContestPrize is Ownable {
         for (uint i = 0; i < winners.length; i++) {
             require(winners[i] != address(0), "invalid address");
             winners[i].transfer(prize[i]);
+            Components[ID].Total_amount -= prize[i];
         }
         Components[ID].status = false;
     }
@@ -155,6 +161,7 @@ contract ContestPrize is Ownable {
     function withdrawOwner(address payable _to, uint _ID) external onlyOwner {
         require(Components[_ID].status == false, "Components is not over");
         _to.transfer(Components[_ID].Total_amount);
+        Components[_ID].Total_amount = 0;
     }
 
     // return total budget of a contest with get ID
