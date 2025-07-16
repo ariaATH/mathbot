@@ -129,11 +129,6 @@ contract ContestPrize is Ownable, ReentrancyGuard {
         _first.transfer(value_first);
         _second.transfer(value_second);
         _Third.transfer(value_Third);
-        unchecked {
-            Components[ID].Total_amount -= (value_first +
-                value_second +
-                value_Third);
-        }
     }
 
     // this function Get the winner's address and ID for the duel competition and give her the prize for the duel competition.
