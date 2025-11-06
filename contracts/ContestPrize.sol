@@ -57,7 +57,7 @@ contract ContestPrize is Ownable, ReentrancyGuard {
     function Deposit(
         uint _ID,
         uint _cnt
-    ) external CheckActive(_ID) onlyOwner {
+    ) external CheckexistID(_ID) CheckActive(_ID) onlyOwner {
         uint256 _total = Components[_ID].Price * _cnt;
         unchecked {
             Components[_ID].Total_amount += (_total);
@@ -74,13 +74,10 @@ contract ContestPrize is Ownable, ReentrancyGuard {
         address payable _second,
         address payable _Third,
         uint _ID
-    ) external CheckActive(_ID) onlyOwner CheckexistID(_ID) nonReentrant {
-        require(
-            _first != address(0) &&
-                _second != address(0) &&
-                _Third != address(0),
-            "Invalid address"
-        );
+    ) external onlyOwner CheckexistID(_ID) CheckActive(_ID) nonReentrant {
+        if (_first == address(0) || _second == address(0) || _Third == address(0)) {
+            revert wrongaddress(_first, _second, _Third);
+        }
         uint award = Components[_ID].Total_amount;
         Components[_ID].status = false;
         _first.transfer((award * 30) / 100);
@@ -104,7 +101,7 @@ contract ContestPrize is Ownable, ReentrancyGuard {
         uint percent2,
         uint percent3,
         uint _ID
-    ) external CheckActive(_ID) onlyOwner CheckexistID(_ID) nonReentrant {
+    ) external onlyOwner CheckexistID(_ID) CheckActive(_ID) nonReentrant {
         uint sum = percent1 + percent2 + percent3;
         if (sum > 100) revert wrongpercentage(sum);
         Components[_ID].status = false;
@@ -127,7 +124,7 @@ contract ContestPrize is Ownable, ReentrancyGuard {
         uint value_second,
         uint value_Third,
         uint ID
-    ) external onlyOwner CheckActive(ID) CheckexistID(ID) nonReentrant {
+    ) external onlyOwner CheckexistID(ID) CheckActive(ID) nonReentrant {
         if (_first == address(0) || _second == address(0) || _Third == address(0)) {
             revert wrongaddress(_first, _second, _Third);
         }
@@ -143,9 +140,8 @@ contract ContestPrize is Ownable, ReentrancyGuard {
         uint256 ID_comp
     )
         external
-        onlyOwner
+        onlyOwner CheckexistID(ID_comp)
         CheckActive(ID_comp)
-        CheckexistID(ID_comp)
         nonReentrant
     {
         require(_first != address(0), "Invalid address");
@@ -164,7 +160,7 @@ contract ContestPrize is Ownable, ReentrancyGuard {
         address payable[] calldata winners,
         uint[] calldata prize,
         uint ID
-    ) external onlyOwner CheckActive(ID) CheckexistID(ID) nonReentrant {
+    ) external onlyOwner CheckexistID(ID) CheckActive(ID) nonReentrant {
         require(winners.length == prize.length, "Length mismatch");
         Components[ID].status = false;
         for (uint i = 0; i < winners.length; i++) {
