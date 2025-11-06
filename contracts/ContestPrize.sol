@@ -28,6 +28,10 @@ contract ContestPrize is Ownable, ReentrancyGuard {
         require(Components[id].exist, "this ID is not exist");
         _;
     }
+    // Error for wrong percentage inputs
+    error wrongpercentage(uint);
+    // Error for wrong address inputs
+    error wrongaddress(address first , address second , address third);
 
     event ContestCreated(uint ID, uint Price);
 
@@ -53,7 +57,7 @@ contract ContestPrize is Ownable, ReentrancyGuard {
     function Deposit(
         uint _ID,
         uint _cnt
-    ) external payable CheckActive(_ID) onlyOwner {
+    ) external CheckActive(_ID) onlyOwner {
         unchecked {
             Components[_ID].Total_amount += (Components[_ID].Price * _cnt);
         }
@@ -97,7 +101,7 @@ contract ContestPrize is Ownable, ReentrancyGuard {
         uint _ID
     ) external CheckActive(_ID) onlyOwner CheckexistID(_ID) nonReentrant {
         uint sum = percent1 + percent2 + percent3;
-        require(sum <= 100, "Wrong percentages");
+        if (sum > 100) revert wrongpercentage(sum);
         Components[_ID].status = false;
         uint award = Components[_ID].Total_amount;
         _first.transfer((award * percent1) / 100);
@@ -119,12 +123,9 @@ contract ContestPrize is Ownable, ReentrancyGuard {
         uint value_Third,
         uint ID
     ) external onlyOwner CheckActive(ID) CheckexistID(ID) nonReentrant {
-        require(
-            _first != address(0) &&
-                _second != address(0) &&
-                _Third != address(0),
-            "Invalid address"
-        );
+        if (_first == address(0) || _second == address(0) || _Third == address(0)) {
+            revert wrongaddress(_first, _second, _Third);
+        }
         Components[ID].status = false;
         _first.transfer(value_first);
         _second.transfer(value_second);
