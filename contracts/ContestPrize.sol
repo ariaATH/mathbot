@@ -58,9 +58,14 @@ contract ContestPrize is Ownable, ReentrancyGuard {
         uint _ID,
         uint _cnt
     ) external CheckActive(_ID) onlyOwner {
+        uint256 _total = Components[_ID].Price * _cnt;
         unchecked {
-            Components[_ID].Total_amount += (Components[_ID].Price * _cnt);
+            Components[_ID].Total_amount += (_total);
         }
+        require(
+            address(this).balance >= _total,
+            "Not enough ETH balance in contract"
+        );
     }
 
     // Divides the prizes of a competition among the winners with predetermined percentages
