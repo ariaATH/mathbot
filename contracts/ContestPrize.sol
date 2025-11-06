@@ -2,8 +2,9 @@
 pragma solidity ^0.8.20;
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
+import "@openzeppelin/contracts/utils/Pausable.sol";
 
-contract ContestPrize is Ownable, ReentrancyGuard {
+contract ContestPrize is Ownable, ReentrancyGuard, Pausable {
     constructor() Ownable(msg.sender) {}
 
     struct comp {
@@ -200,5 +201,13 @@ contract ContestPrize is Ownable, ReentrancyGuard {
     // Checks whether or not there is a match with this ID.
     function getcompexist(uint256 _ID) external view returns (bool) {
         return Components[_ID].exist;
+    }
+    // if contract We encountered a problem, contract owner can stop the work
+    function pause() external onlyOwner {
+        _pause();
+    }
+    // if contract is paused, no one can enter the competition
+    function unpause() external onlyOwner {
+        _unpause();
     }
 }
