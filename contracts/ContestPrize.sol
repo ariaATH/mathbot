@@ -33,21 +33,21 @@ contract ContestPrize is Ownable, ReentrancyGuard {
     // Error for wrong address inputs
     error wrongaddress(address first , address second , address third);
 
-    event ContestCreated(uint ID, uint Price);
+    event ContestCreated(uint256 ID, uint256 Price);
 
-    event WinnersAwarded(uint ID, address first, address second, address third);
+    event WinnersAwarded(uint256 ID, address first, address second, address third);
 
     // This function is used to define a contest and takes the ID and cost of participating in the contest.
     function Addcomp(
-        uint _ID,
-        uint _Price
+        uint256 _ID,
+        uint256 _Price
     ) external onlyOwner ChecknotexistId(_ID) {
         Components[_ID] = comp(0, _Price, true, true);
         emit ContestCreated(_ID, _Price);
     }
 
     // This function is used to define a free contest
-    function Addfreecomp(uint _ID) external onlyOwner ChecknotexistId(_ID) {
+    function Addfreecomp(uint256 _ID) external onlyOwner ChecknotexistId(_ID) {
         Components[_ID] = comp(0, 0, true, true);
         emit ContestCreated(_ID, 0);
     }
@@ -55,8 +55,8 @@ contract ContestPrize is Ownable, ReentrancyGuard {
     //This function is for determining the total budget of a competition and get ID and The number of contestants
     //this is not for free comp
     function Deposit(
-        uint _ID,
-        uint _cnt
+        uint256 _ID,
+        uint256 _cnt
     ) external CheckexistID(_ID) CheckActive(_ID) onlyOwner {
         uint256 _total = Components[_ID].Price * _cnt;
         unchecked {
@@ -73,12 +73,12 @@ contract ContestPrize is Ownable, ReentrancyGuard {
         address payable _first,
         address payable _second,
         address payable _Third,
-        uint _ID
+        uint256 _ID
     ) external onlyOwner CheckexistID(_ID) CheckActive(_ID) nonReentrant {
         if (_first == address(0) || _second == address(0) || _Third == address(0)) {
             revert wrongaddress(_first, _second, _Third);
         }
-        uint award = Components[_ID].Total_amount;
+        uint256 award = Components[_ID].Total_amount;
         Components[_ID].status = false;
         _first.transfer((award * 30) / 100);
         _second.transfer((award * 20) / 100);
@@ -97,15 +97,15 @@ contract ContestPrize is Ownable, ReentrancyGuard {
         address payable _first,
         address payable _second,
         address payable _Third,
-        uint percent1,
-        uint percent2,
-        uint percent3,
-        uint _ID
+        uint256 percent1,
+        uint256 percent2,
+        uint256 percent3,
+        uint256 _ID
     ) external onlyOwner CheckexistID(_ID) CheckActive(_ID) nonReentrant {
-        uint sum = percent1 + percent2 + percent3;
+        uint256 sum = percent1 + percent2 + percent3;
         if (sum > 100) revert wrongpercentage(sum);
         Components[_ID].status = false;
-        uint award = Components[_ID].Total_amount;
+        uint256 award = Components[_ID].Total_amount;
         _first.transfer((award * percent1) / 100);
         _second.transfer((award * percent2) / 100);
         _Third.transfer((award * percent3) / 100);
@@ -120,10 +120,10 @@ contract ContestPrize is Ownable, ReentrancyGuard {
         address payable _first,
         address payable _second,
         address payable _Third,
-        uint value_first,
-        uint value_second,
-        uint value_Third,
-        uint ID
+        uint256 value_first,
+        uint256 value_second,
+        uint256 value_Third,
+        uint256 ID
     ) external onlyOwner CheckexistID(ID) CheckActive(ID) nonReentrant {
         if (_first == address(0) || _second == address(0) || _Third == address(0)) {
             revert wrongaddress(_first, _second, _Third);
@@ -158,12 +158,12 @@ contract ContestPrize is Ownable, ReentrancyGuard {
     // takes a presentation of the winners and a presentation of the prizes and distributes the prizes.
     function Awardforarbitrary_comp(
         address payable[] calldata winners,
-        uint[] calldata prize,
-        uint ID
+        uint256[] calldata prize,
+        uint256 ID
     ) external onlyOwner CheckexistID(ID) CheckActive(ID) nonReentrant {
         require(winners.length == prize.length, "Length mismatch");
         Components[ID].status = false;
-        for (uint i = 0; i < winners.length; i++) {
+        for (uint256 i = 0; i < winners.length; i++) {
             require(winners[i] != address(0), "invalid address");
             winners[i].transfer(prize[i]);
             unchecked {
@@ -175,30 +175,30 @@ contract ContestPrize is Ownable, ReentrancyGuard {
     // This function is for withdrawing the organizer's share of the prize after the competition ends.
     function withdrawOwner(
         address payable _to,
-        uint _ID
+        uint256 _ID
     ) external onlyOwner CheckexistID(_ID) nonReentrant {
         require(Components[_ID].status == false, "Components is not over");
-        uint amount = Components[_ID].Total_amount;
+        uint256 amount = Components[_ID].Total_amount;
         Components[_ID].Total_amount = 0;
         _to.transfer(amount);
     }
 
     // return total budget of a contest with get ID
     function getcomptotal(
-        uint _ID
-    ) external view CheckexistID(_ID) returns (uint) {
+        uint256 _ID
+    ) external view CheckexistID(_ID) returns (uint256) {
         return Components[_ID].Total_amount;
     }
 
     //  just return Running or finished competition
     function getcompstatus(
-        uint _ID
+        uint256 _ID
     ) external view CheckexistID(_ID) returns (bool) {
         return Components[_ID].status;
     }
 
     // Checks whether or not there is a match with this ID.
-    function getcompexist(uint _ID) external view returns (bool) {
+    function getcompexist(uint256 _ID) external view returns (bool) {
         return Components[_ID].exist;
     }
 }
