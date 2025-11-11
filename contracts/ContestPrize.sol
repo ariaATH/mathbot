@@ -47,6 +47,12 @@ contract ContestPrize is Ownable, ReentrancyGuard, Pausable {
         emit ContestCreated(_ID, _Price);
     }
 
+    // Internal function to safely transfer Ether
+    function _safetransfer(address payable recipient, uint256 amount) internal {
+        (bool success,) = recipient.call{value: amount}("");
+        require(success, "Transfer failed");
+    }
+    
     // This function is used to define a free contest
     function Addfreecomp(uint256 _ID) external onlyOwner ChecknotexistId(_ID) whenNotPaused {
         Components[_ID] = comp(0, 0, true, true);
