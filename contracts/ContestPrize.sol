@@ -87,9 +87,9 @@ contract ContestPrize is Ownable, ReentrancyGuard, Pausable {
         }
         uint256 award = Components[_ID].Total_amount;
         Components[_ID].status = false;
-        _first.transfer((award * 30) / 100);
-        _second.transfer((award * 20) / 100);
-        _Third.transfer((award * 10) / 100);
+        _safetransfer(_first, (award * 30) / 100);
+        _safetransfer(_second, (award * 20) / 100);
+        _safetransfer(_Third, (award * 10) / 100);
         emit WinnersAwarded(_ID, _first, _second, _Third);
         unchecked {
             Components[_ID].Total_amount -= (award * 60) / 100;
@@ -113,9 +113,9 @@ contract ContestPrize is Ownable, ReentrancyGuard, Pausable {
         if (sum > 100) revert wrongpercentage(sum);
         Components[_ID].status = false;
         uint256 award = Components[_ID].Total_amount;
-        _first.transfer((award * percent1) / 100);
-        _second.transfer((award * percent2) / 100);
-        _Third.transfer((award * percent3) / 100);
+        _safetransfer(_first, (award * percent1) / 100);
+        _safetransfer(_second, (award * percent2) / 100);
+        _safetransfer(_Third, (award * percent3) / 100);
         unchecked {
             Components[_ID].Total_amount -= (award * sum) / 100;
         }
@@ -136,9 +136,9 @@ contract ContestPrize is Ownable, ReentrancyGuard, Pausable {
             revert wrongaddress(_first, _second, _Third);
         }
         Components[ID].status = false;
-        _first.transfer(value_first);
-        _second.transfer(value_second);
-        _Third.transfer(value_Third);
+        _safetransfer(_first, value_first);
+        _safetransfer(_second, value_second);
+        _safetransfer(_Third, value_Third);
     }
 
     // this function Get the winner's address and ID for the duel competition and give her the prize for the duel competition.
@@ -156,7 +156,7 @@ contract ContestPrize is Ownable, ReentrancyGuard, Pausable {
         Components[ID_comp].status = false;
         // 90% of the total amount is given to the winner
         uint value = (Components[ID_comp].Total_amount * 90) / 100;
-        _first.transfer(value);
+        _safetransfer(_first, value);
         unchecked {
             Components[ID_comp].Total_amount -= value;
         }
@@ -173,7 +173,7 @@ contract ContestPrize is Ownable, ReentrancyGuard, Pausable {
         Components[ID].status = false;
         for (uint256 i = 0; i < winners.length; i++) {
             require(winners[i] != address(0), "invalid address");
-            winners[i].transfer(prize[i]);
+            _safetransfer(winners[i], prize[i]);
             unchecked {
                 Components[ID].Total_amount -= prize[i];
             }
@@ -188,7 +188,7 @@ contract ContestPrize is Ownable, ReentrancyGuard, Pausable {
         require(Components[_ID].status == false, "Components is not over");
         uint256 amount = Components[_ID].Total_amount;
         Components[_ID].Total_amount = 0;
-        _to.transfer(amount);
+        _safetransfer(_to, amount);
     }
 
     // return total budget of a contest with get ID
