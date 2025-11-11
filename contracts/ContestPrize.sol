@@ -38,13 +38,34 @@ contract ContestPrize is Ownable, ReentrancyGuard, Pausable {
 
     event WinnersAwarded(uint256 ID, address first, address second, address third);
 
+    event signupcompleted(uint256 indexed ID, address indexed user);
+
     // This function is used to define a contest and takes the ID and cost of participating in the contest.
     function Addcomp(
         uint256 _ID,
-        uint256 _Price
+        uint256 _Price , uint256 _totalContestants
     ) external onlyOwner ChecknotexistId(_ID) whenNotPaused {
-        Components[_ID] = comp(0, _Price, true, true);
+        if (_Price == 0 ){
+            Components[_ID] = comp(_totalContestants, 0, true, true);
+        }
+        else {
+            Components[_ID] = comp(0, _Price, true, true);
+        }
         emit ContestCreated(_ID, _Price);
+    }
+
+
+    // this function is for user signup in a contest user should call 
+    function signup(uint256 _ID) external payable CheckexistID(_ID) CheckActive(_ID) whenNotPaused {
+        require(msg.value == Components[_ID].Price, "Incorrect ETH amount");
+        if (Components[_ID].Price > 0) {
+            _safetransfer(payable(address(this)), Components[_ID].Price);
+            Components[_ID].Total_amount += Components[_ID].Price;
+            emit signupcompleted(_ID, msg.sender);
+        }
+        else {
+            emit signupcompleted(_ID, msg.sender);
+        }
     }
 
     // Internal function to safely transfer Ether
@@ -53,22 +74,6 @@ contract ContestPrize is Ownable, ReentrancyGuard, Pausable {
         require(success, "Transfer failed");
     }
     
-    //This function is for determining the total budget of a competition and get ID and The number of contestants
-    //this is not for free comp
-    function Deposit(
-        uint256 _ID,
-        uint256 _cnt
-    ) external CheckexistID(_ID) CheckActive(_ID) onlyOwner whenNotPaused {
-        uint256 _total = Components[_ID].Price * _cnt;
-        require(
-            address(this).balance >= _total,
-            "Not enough ETH balance in contract"
-        );
-        unchecked {
-            Components[_ID].Total_amount += (_total);
-        }
-    }
-
     // Divides the prizes of a competition among the winners with predetermined percentages
     function Awardwinners(
         address payable _first,
