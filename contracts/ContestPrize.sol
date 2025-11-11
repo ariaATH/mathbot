@@ -43,10 +43,10 @@ contract ContestPrize is Ownable, ReentrancyGuard, Pausable {
     // This function is used to define a contest and takes the ID and cost of participating in the contest.
     function Addcomp(
         uint256 _ID,
-        uint256 _Price , uint256 _totalContestants
+        uint256 _Price , uint256 _totalprize
     ) external onlyOwner ChecknotexistId(_ID) whenNotPaused {
         if (_Price == 0 ){
-            Components[_ID] = comp(_totalContestants, 0, true, true);
+            Components[_ID] = comp(_totalprize, 0, true, true);
         }
         else {
             Components[_ID] = comp(0, _Price, true, true);
@@ -54,18 +54,18 @@ contract ContestPrize is Ownable, ReentrancyGuard, Pausable {
         emit ContestCreated(_ID, _Price);
     }
 
-
     // this function is for user signup in a contest user should call 
-    function signup(uint256 _ID) external payable CheckexistID(_ID) CheckActive(_ID) whenNotPaused {
-        require(msg.value == Components[_ID].Price, "Incorrect ETH amount");
-        if (Components[_ID].Price > 0) {
-            _safetransfer(payable(address(this)), Components[_ID].Price);
-            Components[_ID].Total_amount += Components[_ID].Price;
-            emit signupcompleted(_ID, msg.sender);
-        }
-        else {
-            emit signupcompleted(_ID, msg.sender);
-        }
+    function signup(uint256 _ID) external payable CheckexistID(_ID) CheckActive(_ID) whenNotPaused{
+    uint256 price = Components[_ID].Price;
+    require(msg.value == price, "Incorrect ETH amount");
+
+    Components[_ID].Total_amount += msg.value;
+
+    emit signupcompleted(_ID, msg.sender);
+    }
+    // owner should call this if the contest is free
+    function addbudgeforfreecomp(uint256 _ID) external payable onlyOwner CheckexistID(_ID) whenNotPaused {
+        require(msg.value == Components[_ID].Total_amount, "Must send ETH");
     }
 
     // Internal function to safely transfer Ether
