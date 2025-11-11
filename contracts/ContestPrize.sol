@@ -53,12 +53,6 @@ contract ContestPrize is Ownable, ReentrancyGuard, Pausable {
         require(success, "Transfer failed");
     }
     
-    // This function is used to define a free contest
-    function Addfreecomp(uint256 _ID) external onlyOwner ChecknotexistId(_ID) whenNotPaused {
-        Components[_ID] = comp(0, 0, true, true);
-        emit ContestCreated(_ID, 0);
-    }
-
     //This function is for determining the total budget of a competition and get ID and The number of contestants
     //this is not for free comp
     function Deposit(
