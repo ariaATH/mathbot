@@ -42,13 +42,13 @@ contract ContestPrize is Ownable, ReentrancyGuard, Pausable {
     function Addcomp(
         uint256 _ID,
         uint256 _Price
-    ) external onlyOwner ChecknotexistId(_ID) {
+    ) external onlyOwner ChecknotexistId(_ID) whenNotPaused {
         Components[_ID] = comp(0, _Price, true, true);
         emit ContestCreated(_ID, _Price);
     }
 
     // This function is used to define a free contest
-    function Addfreecomp(uint256 _ID) external onlyOwner ChecknotexistId(_ID) {
+    function Addfreecomp(uint256 _ID) external onlyOwner ChecknotexistId(_ID) whenNotPaused {
         Components[_ID] = comp(0, 0, true, true);
         emit ContestCreated(_ID, 0);
     }
@@ -58,7 +58,7 @@ contract ContestPrize is Ownable, ReentrancyGuard, Pausable {
     function Deposit(
         uint256 _ID,
         uint256 _cnt
-    ) external CheckexistID(_ID) CheckActive(_ID) onlyOwner {
+    ) external CheckexistID(_ID) CheckActive(_ID) onlyOwner whenNotPaused {
         uint256 _total = Components[_ID].Price * _cnt;
         require(
             address(this).balance >= _total,
@@ -75,7 +75,7 @@ contract ContestPrize is Ownable, ReentrancyGuard, Pausable {
         address payable _second,
         address payable _Third,
         uint256 _ID
-    ) external onlyOwner CheckexistID(_ID) CheckActive(_ID) nonReentrant {
+    ) external onlyOwner CheckexistID(_ID) CheckActive(_ID) nonReentrant whenNotPaused {
         if (_first == address(0) || _second == address(0) || _Third == address(0)) {
             revert wrongaddress(_first, _second, _Third);
         }
@@ -102,7 +102,7 @@ contract ContestPrize is Ownable, ReentrancyGuard, Pausable {
         uint256 percent2,
         uint256 percent3,
         uint256 _ID
-    ) external onlyOwner CheckexistID(_ID) CheckActive(_ID) nonReentrant {
+    ) external onlyOwner CheckexistID(_ID) CheckActive(_ID) nonReentrant whenNotPaused {
         uint256 sum = percent1 + percent2 + percent3;
         if (sum > 100) revert wrongpercentage(sum);
         Components[_ID].status = false;
@@ -125,7 +125,7 @@ contract ContestPrize is Ownable, ReentrancyGuard, Pausable {
         uint256 value_second,
         uint256 value_Third,
         uint256 ID
-    ) external onlyOwner CheckexistID(ID) CheckActive(ID) nonReentrant {
+    ) external onlyOwner CheckexistID(ID) CheckActive(ID) nonReentrant whenNotPaused {
         if (_first == address(0) || _second == address(0) || _Third == address(0)) {
             revert wrongaddress(_first, _second, _Third);
         }
@@ -144,6 +144,7 @@ contract ContestPrize is Ownable, ReentrancyGuard, Pausable {
         onlyOwner CheckexistID(ID_comp)
         CheckActive(ID_comp)
         nonReentrant
+        whenNotPaused
     {
         require(_first != address(0), "Invalid address");
         Components[ID_comp].status = false;
@@ -161,7 +162,7 @@ contract ContestPrize is Ownable, ReentrancyGuard, Pausable {
         address payable[] calldata winners,
         uint256[] calldata prize,
         uint256 ID
-    ) external onlyOwner CheckexistID(ID) CheckActive(ID) nonReentrant {
+    ) external onlyOwner CheckexistID(ID) CheckActive(ID) nonReentrant whenNotPaused {
         require(winners.length == prize.length, "Length mismatch");
         Components[ID].status = false;
         for (uint256 i = 0; i < winners.length; i++) {
@@ -177,7 +178,7 @@ contract ContestPrize is Ownable, ReentrancyGuard, Pausable {
     function withdrawOwner(
         address payable _to,
         uint256 _ID
-    ) external onlyOwner CheckexistID(_ID) nonReentrant {
+    ) external onlyOwner CheckexistID(_ID) nonReentrant whenNotPaused {
         require(Components[_ID].status == false, "Components is not over");
         uint256 amount = Components[_ID].Total_amount;
         Components[_ID].Total_amount = 0;
