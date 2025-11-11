@@ -103,6 +103,9 @@ contract ContestPrize is Ownable, ReentrancyGuard, Pausable {
         uint256 percent3,
         uint256 _ID
     ) external onlyOwner CheckexistID(_ID) CheckActive(_ID) nonReentrant whenNotPaused {
+        if (_first == address(0) || _second == address(0) || _Third == address(0)) {
+            revert wrongaddress(_first, _second, _Third);
+        }
         uint256 sum = percent1 + percent2 + percent3;
         if (sum > 100) revert wrongpercentage(sum);
         Components[_ID].status = false;
@@ -163,7 +166,7 @@ contract ContestPrize is Ownable, ReentrancyGuard, Pausable {
         uint256[] calldata prize,
         uint256 ID
     ) external onlyOwner CheckexistID(ID) CheckActive(ID) nonReentrant whenNotPaused {
-        require(winners.length == prize.length, "Length mismatch");
+        require(winners.length == prize.length && winners.length > 0, "Length mismatch");
         Components[ID].status = false;
         for (uint256 i = 0; i < winners.length; i++) {
             require(winners[i] != address(0), "invalid address");
