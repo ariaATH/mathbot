@@ -18,4 +18,18 @@ contract ContestPrizeTest is Test {
       vm.expectRevert();
       _contestPrize.Addcomp(2, 2, 2);
    }
+
+   function testsignup() public{
+      address _testaddress = 0x0000000000000000000000000000000000001234 ;
+      _contestPrize.Addcomp(1, 10 ether , 0);
+      vm.expectRevert(bytes("this ID is not exist"));
+      _contestPrize.signup(2);
+      vm.deal(_testaddress, 100 ether);
+      vm.startPrank(_testaddress);
+      _contestPrize.signup{value : 10 ether}(1);
+      vm.stopPrank();
+      assertEq(address(_contestPrize).balance , 10 ether);
+      assertEq(_contestPrize.getcomptotal(1) , 10 ether);
+   }
+
 }
