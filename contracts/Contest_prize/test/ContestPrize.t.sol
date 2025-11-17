@@ -32,4 +32,12 @@ contract ContestPrizeTest is Test {
       assertEq(_contestPrize.getcomptotal(1) , 10 ether);
    }
 
+   function testaddbudgetfreecomp() public {
+      vm.deal(address(this), 100 ether);
+      _contestPrize.Addcomp(1, 0 , 10 ether);
+      vm.expectRevert(bytes("Must send ETH"));
+      _contestPrize.addbudgeforfreecomp{value : 5 ether}(1);
+   }
+
+
 }
