@@ -140,11 +140,11 @@ contract ContestPrize is Ownable, ReentrancyGuard, Pausable {
         }
         Components[ID].status = false;
         _safetransfer(_first, value_first);
-        Components[ID].total_amount -= value_first;
+        Components[ID].Total_amount -= value_first;
         _safetransfer(_second, value_second);
-        Components[ID].total_amount -= value_second;
+        Components[ID].Total_amount -= value_second;
         _safetransfer(_Third, value_Third);
-        Components[ID].total_amount -= value_Third;
+        Components[ID].Total_amount -= value_Third;
     }
 
     // this function Get the winner's address and ID for the duel competition and give her the prize for the duel competition.

@@ -72,5 +72,66 @@ contract ContestPrizeTest is Test {
       assertEq(_testaddress3.balance , 5 ether);
    }
 
+    function testawardforfreecomp() public {
+      address _testaddress1 = 0x0000000000000000000000000000000000001234 ;
+      address _testaddress2 = 0x0000000000000000000000000000000000004231 ;
+      address _testaddress3 = 0x0000000000000000000000000000000000005343 ;
+      vm.deal(_testaddress1, 0);
+      vm.deal(_testaddress2, 0);
+      vm.deal(_testaddress3, 0);
+      _contestPrize.Addcomp(1, 0 , 100 ether);
+      vm.deal(address(this), 100 ether);
+      _contestPrize.addbudgeforfreecomp{value : 100 ether}(1);
+      _contestPrize.Awardforfree_comp(payable(_testaddress1), payable(_testaddress2), payable(_testaddress3), 50 ether, 30 ether, 5 ether, 1);
+      assertEq(_testaddress1.balance , 50 ether);
+      assertEq(_testaddress2.balance , 30 ether);
+      assertEq(_testaddress3.balance , 5 ether);
+   }
 
+    function testawardforarbitrary() public {
+      address _testaddress1 = 0x0000000000000000000000000000000000001234 ;
+      address _testaddress2 = 0x0000000000000000000000000000000000004231 ;
+      address _testaddress3 = 0x0000000000000000000000000000000000005343 ;
+      address payable[] memory  winners = new address payable[](3);
+      winners[0] = payable(_testaddress1);
+      winners[1] = payable(_testaddress2);
+      winners[2] = payable(_testaddress3);
+      uint256[] memory amounts = new uint256[](3);
+      amounts[0] = 50 ether;
+      amounts[1] = 30 ether;
+      amounts[2] = 5 ether;
+      vm.deal(_testaddress1, 0);
+      vm.deal(_testaddress2, 0);
+      vm.deal(_testaddress3, 0);
+      _contestPrize.Addcomp(1, 0 , 100 ether);
+      vm.deal(address(this), 100 ether);
+      _contestPrize.addbudgeforfreecomp{value : 100 ether}(1);
+      _contestPrize.Awardforarbitrary_comp(winners, amounts, 1);
+      assertEq(_testaddress1.balance , 50 ether);
+      assertEq(_testaddress2.balance , 30 ether);
+      assertEq(_testaddress3.balance , 5 ether);
+   }
+
+   function awardforduel() public {
+         address _testaddress1 = 0x0000000000000000000000000000000000001234 ;
+         vm.deal(_testaddress1, 0);
+         _contestPrize.Addcomp(1, 0 , 100 ether);
+         vm.deal(address(this), 100 ether);
+         _contestPrize.addbudgeforfreecomp{value : 100 ether}(1);
+         _contestPrize.Awardforduel_comp(payable(_testaddress1), 1);
+         assertEq(_testaddress1.balance , 90 ether);
+   }
+
+   function testwithdrawowner() public {
+      address _testaddress1 = 0x0000000000000000000000000000000000001234 ;
+      vm.deal(_testaddress1, 0);
+      vm.deal(address(this), 100 ether);
+      _contestPrize.Addcomp(1, 0, 100 ether);
+      _contestPrize.addbudgeforfreecomp{value : 100 ether}(1);
+      _contestPrize.Awardforduel_comp(payable(_testaddress1), 1);
+      assertEq(_testaddress1.balance, 90 ether);
+      _contestPrize.withdrawOwner(payable(_testaddress1) , 1);
+      assertEq(_testaddress1.balance, 100 ether);
+      
+   }
 }
