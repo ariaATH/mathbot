@@ -1,41 +1,44 @@
-# اتصال بلاکچین (ContestPrize)
+# Blockchain integration (ContestPrize)
 
-لایه بلاکچین (قرارداد + کدهای اتصال) نوشته و تست شده است. این سند می‌گوید **تیم بک‌اند و فرانت چه کاری باید انجام دهند**.
+The blockchain layer (contract + the code that connects to it) is written and tested. This document
+says **what the backend and the frontend developer have to do**.
 
-- قرارداد: `contracts/Contest_prize/` · بک‌اند: `backend/contractapi/` · فرانت: `frontend/src/blockchain/`
-- قرارداد فقط پول را نگه می‌دارد؛ منطق مسابقه در جنگو می‌ماند. **شناسه مسابقه روی قرارداد = `id` رکورد `Contest` در دیتابیس.**
+- Contract: `contracts/Contest_prize/` · Backend: `backend/contractapi/` · Frontend: `frontend/src/blockchain/`
+- The contract only holds money; all contest logic stays in Django. **A contest id on the contract is
+  the `id` of its `Contest` row in the database.**
 
-| چه کسی | چه کاری |
+| Who | What |
 |---|---|
-| مسئول بک‌اند / سرور | **استقرار قرارداد و ساخت کیف پول سرور** (بخش «استقرار»)، تغییر مدل‌ها و تایید پرداخت |
-| مسئول فرانت | رابط کاربری اتصال کیف پول و ثبت‌نام |
+| Backend / server owner | **Deploying the contract and creating the server wallet** (see "Deployment"), the model changes and the payment check |
+| Frontend owner | The UI for connecting a wallet and signing up |
 
-استقرار قرارداد عمدا به عهده مسئول سرور است، چون کلید خصوصی مالک قرارداد باید روی همان سروری بماند
-که خودش مدیریتش می‌کند.
+Deploying is deliberately the job of whoever runs the server: the owner private key stays on that
+machine, so the person who manages it has to create and keep it.
 
-## جریان کار
+## How it works
 
 ```
-ادمین  → POST /api/contract/admin/contests/        → قرارداد: مسابقه ساخته می‌شود
-کاربر  → متامسک: signup(contestId, userId) + پرداخت
-       → POST /api/contests/<id>/signup/ {wallet_address, tx_hash}
-         بک‌اند با verify_signup پرداخت را چک می‌کند → Participation ساخته می‌شود
-ادمین  → POST .../award/top3/ (یا سایر حالت‌ها)     → جایزه به برندگان واریز می‌شود
+admin → POST /api/contract/admin/contests/         → contract: the contest is created
+user  → MetaMask: signup(contestId, userId) + pays the entry fee
+      → POST /api/contests/<id>/signup/ {wallet_address, tx_hash}
+        backend checks the payment with verify_signup() → Participation is created
+admin → POST .../award/top3/ (or another award type) → prizes are sent to the winners
 ```
 
-کاربر هنگام پرداخت، `id` کاربری‌اش را هم داخل تراکنش می‌فرستد؛ قرارداد آن را ذخیره می‌کند تا بک‌اند مطمئن شود
-این کیف پول واقعا برای همین کاربر پول داده (کسی نمی‌تواند تراکنش دیگری را به اسم خودش جا بزند).
+When a user pays, the transaction also carries their backend user id. The contract stores it, so the
+backend can be sure this wallet really paid **for that user** - nobody can claim somebody else's
+transaction as their own.
 
-## راه‌اندازی محلی
+## Local setup
 
 ```bash
-anvil                                           # شبکه تستی محلی (ترمینال جدا)
+anvil                                            # local test chain (separate terminal)
 cd contracts/Contest_prize && forge build
 PRIVATE_KEY=<anvil-key-0> forge script script/ContestPrize.s.sol:Deploycontestprize \
-  --rpc-url http://127.0.0.1:8545 --broadcast    # آدرس قرارداد را چاپ می‌کند
+  --rpc-url http://127.0.0.1:8545 --broadcast     # prints the contract address
 ```
 
-آدرس را در `backend/.env` بگذارید (بقیه متغیرها در `backend/.env.example`):
+Put the address in `backend/.env` (all variables are in `backend/.env.example`):
 
 ```env
 BLOCKCHAIN_RPC_URL=http://127.0.0.1:8545
@@ -44,92 +47,92 @@ CONTEST_CONTRACT_ADDRESS=0x...
 BLOCKCHAIN_OWNER_PRIVATE_KEY=<anvil-key-0>
 ```
 
-اگر این متغیرها خالی باشند، بقیه سایت عادی کار می‌کند و فقط APIهای بلاکچین `503` می‌دهند.
+If these are empty the rest of the site works normally and only the blockchain endpoints answer `503`.
 
 ---
 
-## استقرار روی تست‌نت (وظیفه مسئول بک‌اند / سرور)
+## Deployment to the testnet (backend / server owner)
 
-> این کار باید با **کیف پول خودتان** انجام شود: کلید خصوصی مالک قرارداد روی سرور می‌ماند و به همه
-> پول مسابقه‌ها دسترسی دارد، پس کسی که سرور دستش است باید آن را بسازد و نگه دارد.
+> Do this with **your own wallet**: the owner private key lives on the server and can move all the
+> contest money, so the person who runs the server has to create it and keep it.
 
-**۱) یک کیف پول مخصوص سرور بسازید** — در متامسک یک اکانت **جدید** (نه کیف پول شخصی‌تان) بسازید و
-کلید خصوصی‌اش را بردارید (Account details → Show private key).
+**1) Create a wallet for the server** - a **new** account in MetaMask (not your personal wallet) and
+copy its private key (Account details → Show private key).
 
-**۲) اتر تستی بگیرید:** شبکه را روی Sepolia بگذارید و از یک faucet (مثلا `sepoliafaucet.com` یا
-faucet گوگل‌کلاد) حدود ۰.۵ اتر تستی به آدرس این کیف پول بگیرید — هم برای کارمزد، هم برای بودجه
-جایزه مسابقه‌های رایگان.
+**2) Get test ETH:** switch to Sepolia and send about 0.5 test ETH to that address from a faucet
+(e.g. `sepoliafaucet.com` or the Google Cloud faucet). It pays the gas and the prize budget of free
+contests.
 
-**۳) یک RPC بگیرید:** در Infura یا Alchemy یک پروژه رایگان بسازید و آدرس Sepolia آن را بردارید.
+**3) Get an RPC url:** create a free project on Infura or Alchemy and copy its Sepolia url.
 
-**۴) فایل env قرارداد:**
+**4) Contract env file:**
 
 ```bash
 cd contracts/Contest_prize
-cp .env.example .env      # SEPOLIA_RPC_URL و PRIVATE_KEY (کلید کیف پول سرور) را پر کنید
+cp .env.example .env      # fill in SEPOLIA_RPC_URL and PRIVATE_KEY (the server wallet key)
 ```
 
-امن‌تر (اختیاری): به جای نوشتن کلید در فایل، `cast wallet import deployer --interactive` بزنید و در
-دستور بعدی `--account deployer` اضافه کنید.
+Safer (optional): instead of writing the key into a file, run `cast wallet import deployer --interactive`
+and add `--account deployer` to the command below.
 
-**۵) استقرار:**
+**5) Deploy:**
 
 ```bash
 forge build
 forge script script/ContestPrize.s.sol:Deploycontestprize --rpc-url sepolia --broadcast --verify
 ```
 
-خروجی `ContestPrize deployed at: 0x...` را بردارید. (`--verify` به `ETHERSCAN_API_KEY` نیاز دارد؛
-بدون آن هم استقرار انجام می‌شود، فقط سورس روی اکسپلورر نمایش داده نمی‌شود.)
-اگر خواستید با کیف پول دیگری deploy کنید ولی مالکیت دست کیف پول سرور باشد، قبلش در `.env` مقدار
-`CONTRACT_OWNER=<آدرس کیف پول سرور>` را بگذارید.
+Copy the `ContestPrize deployed at: 0x...` line from the output. (`--verify` needs `ETHERSCAN_API_KEY`;
+without it the deploy still works, only the source is not published on the explorer.)
+To deploy from a different wallet but leave ownership with the server wallet, set
+`CONTRACT_OWNER=<server wallet address>` in `.env` before running it.
 
-**۶) بک‌اند را تنظیم کنید** (`backend/.env`) و سرور را ری‌استارت کنید:
+**6) Configure the backend** (`backend/.env`) and restart the server:
 
 ```env
-BLOCKCHAIN_RPC_URL=<همان RPC مرحله ۳>
+BLOCKCHAIN_RPC_URL=<the RPC url from step 3>
 BLOCKCHAIN_CHAIN_ID=11155111
-CONTEST_CONTRACT_ADDRESS=<آدرس مرحله ۵>
-BLOCKCHAIN_OWNER_PRIVATE_KEY=<کلید کیف پول سرور>
+CONTEST_CONTRACT_ADDRESS=<the address from step 5>
+BLOCKCHAIN_OWNER_PRIVATE_KEY=<the server wallet key>
 BLOCKCHAIN_EXPLORER_URL=https://sepolia.etherscan.io
 ```
 
-**۷) تست دود:**
+**7) Smoke test:**
 
 ```bash
 curl -H "Authorization: Bearer <admin-jwt>" http://localhost:8000/api/contract/admin/owner/
-# باید server_wallet_is_owner: true و موجودی غیرصفر برگرداند
+# must return server_wallet_is_owner: true and a non-zero balance
 ```
 
-بعد یک مسابقه آزمایشی بسازید، با یک کیف پول دیگر ثبت‌نام کنید، جایزه بدهید و سهم سایت را برداشت کنید.
+Then create a test contest, sign up with another wallet, award the prizes and withdraw the site share.
 
-**نکات نگهداری:**
+**Keeping it safe:**
 
-- کلید خصوصی فقط در `.env` سرور بماند — نه در گیت، نه در تلگرام، نه در اسکرین‌شات. اگر لو رفت:
-  `POST /api/contract/admin/pause/`، بعد با `withdrawOwner` پول‌ها را خارج کنید و قرارداد را با کیف
-  پول جدید دوباره deploy کنید.
-- موجودی کیف پول سرور را کم نگه دارید و سهم سایت را دوره‌ای به یک کیف پول سرد منتقل کنید.
-- هر deploy دوباره یعنی آدرس جدید؛ مسابقه‌های قبلی روی قرارداد قدیمی می‌مانند، پس قبل از تعویض،
-  جوایز و برداشت‌های قرارداد قبلی را تسویه کنید.
-- برای شبکه اصلی (mainnet) اول یک بازبینی امنیتی مستقل لازم است.
+- The private key belongs in `backend/.env` only - not in git, not in a chat, not in a screenshot.
+  If it leaks: `POST /api/contract/admin/pause/`, move the money out with `withdrawOwner`, and deploy
+  again with a new wallet.
+- Keep a small balance on the server wallet and move the site share to a cold wallet regularly.
+- Every redeploy means a new address; contests created on the old contract stay there, so settle their
+  prizes and withdrawals before switching.
+- Mainnet needs an independent security review first.
 
 ---
 
-## تیم بک‌اند
+## Backend
 
-**۱) مدل‌ها** (`contests/models.py`):
+**1) Models** (`contests/models.py`):
 
 ```python
 class Contest(models.Model):
-    price = models.DecimalField(max_digits=30, decimal_places=18, default=0)   # الان TextField است
+    price = models.DecimalField(max_digits=30, decimal_places=18, default=0)   # currently a TextField
     chain_tx_hash = models.CharField(max_length=66, blank=True, default='')
 
 class Participation(models.Model):
-    wallet_address = models.CharField(max_length=42, blank=True, default='')   # جایزه به همین آدرس می‌رود
+    wallet_address = models.CharField(max_length=42, blank=True, default='')   # the prize goes here
     signup_tx_hash = models.CharField(max_length=66, blank=True, default='')
 ```
 
-**۲) ثبت مسابقه روی قرارداد** بعد از ساخت در دیتابیس:
+**2) Register the contest on the contract** after it is created in the database:
 
 ```python
 from contractapi import services
@@ -140,7 +143,7 @@ tx = services.create_contest(
 contest.chain_tx_hash = tx.tx_hash
 ```
 
-**۳) تایید پرداخت در `ContestSignupAPIView`** (مهم‌ترین قسمت — قبل از ساخت `Participation`):
+**3) Check the payment in `ContestSignupAPIView`** (the important part - before creating the `Participation`):
 
 ```python
 from contractapi import services
@@ -149,7 +152,7 @@ from contractapi.errors import BlockchainError
 wallet = (request.data.get('wallet_address') or '').strip()
 tx_hash = request.data.get('tx_hash')
 try:
-    on_chain = services.get_contest(contest.id)          # None = روی قرارداد ثبت نشده
+    on_chain = services.get_contest(contest.id)          # None = not registered on the contract
     if on_chain and not on_chain['is_free']:
         if not wallet or not services.verify_signup(contest.id, wallet, request.user.id, tx_hash=tx_hash):
             return Response({'error': 'payment_not_found', 'detail': 'پرداخت شما روی بلاکچین پیدا نشد.'}, status=400)
@@ -160,34 +163,36 @@ Participation.objects.create(contest=contest, user=request.user,
                              wallet_address=wallet, signup_tx_hash=tx_hash or '')
 ```
 
-هرگز به ادعای فرانت درباره پرداخت اعتماد نکنید؛ `verify_signup` مستقیم از قرارداد می‌خواند.
+Never trust what the frontend claims about a payment; `verify_signup` reads it from the contract.
 
-**۴) بقیه توابع سرویس** (همه `ContractTransaction` برمی‌گردانند):
+**4) The other service functions** (each returns a `ContractTransaction`):
 
 ```python
 services.cancel_contest(id, user=...)               services.refund_participants(id, wallets, user=...)
 services.award_top3(id, a, b, c, user=...)          services.award_with_percentage(id, a, b, c, [50,30,10], user=...)
 services.award_fixed(id, a, b, c, ['0.5','0.3','0.1'], user=...)
 services.award_duel(id, winner, user=...)           services.award_custom(id, winners, amounts, user=...)
-services.withdraw_owner_share(id, treasury, user=...)   # سهم سایت بعد از پایان
+services.withdraw_owner_share(id, treasury, user=...)   # the site share after the contest ends
 ```
 
-**۵) باگ‌های موجود در اپ `contests` که باید رفع شوند:**
+**5) Existing bugs in the `contests` app that need fixing:**
 
-- `ContestsCreateAPIView` بدون `serializer_class` است → `POST /api/contests/create/` همین حالا ۵۰۰ می‌دهد؛ ضمنا permission آن باید `IsAdminUser` شود (الان هر کاربری می‌تواند مسابقه بسازد).
-- `ContestsDeleteAPIView` از `IsOwnerOrAdmin` استفاده می‌کند که `obj.creator` را چک می‌کند ولی فیلد مدل `created_by` است.
-- پوشه `migrations/` در `.gitignore` است و کانتینر موقع بالا آمدن `makemigrations` می‌زند — برای پروداکشن خطرناک است.
-- `DEBUG = True` و `ALLOWED_HOSTS = ["*"]` ثابت هستند؛ `CommonMiddleware` دوبار آمده و `CorsMiddleware` باید بالاتر از آن باشد.
-- سرویس `backend` در `docker-compose.yml` هیچ `env_file` ندارد.
+- `ContestsCreateAPIView` has no `serializer_class`, so `POST /api/contests/create/` already returns 500;
+  its permission should also be `IsAdminUser` (right now any user can create a contest).
+- `ContestsDeleteAPIView` uses `IsOwnerOrAdmin`, which checks `obj.creator`, but the model field is `created_by`.
+- `migrations/` is in `.gitignore` and the container runs `makemigrations` on startup - risky in production.
+- `DEBUG = True` and `ALLOWED_HOSTS = ["*"]` are hardcoded; `CommonMiddleware` is listed twice and
+  `CorsMiddleware` has to come before it.
+- The `backend` service in `docker-compose.yml` has no `env_file`.
 
 ---
 
-## تیم فرانت
+## Frontend
 
-`ethers` نصب شده و کل منطق در `src/blockchain/` است؛ فقط UI مانده. تنظیمات قرارداد خودکار از
-`GET /api/contract/config/` خوانده می‌شود (نیازی به متغیر محیطی نیست).
+`ethers` is installed and all the logic lives in `src/blockchain/`; only the UI is left. The contract
+settings are loaded from `GET /api/contract/config/` automatically, so no env variable is needed.
 
-**دکمه اتصال کیف پول:**
+**Connect wallet button:**
 
 ```jsx
 import { useWallet, shortAddress } from '../blockchain';
@@ -199,7 +204,7 @@ if (!w.isCorrectNetwork) return <button onClick={w.switchNetwork}>تغییر ش�
 return <span>{shortAddress(w.address)}</span>;
 ```
 
-**ثبت‌نام در مسابقه:**
+**Signing up for a contest:**
 
 ```jsx
 import { signupForContest, toFriendlyError } from '../blockchain';
@@ -209,66 +214,69 @@ try {
     setStep('کیف پول را تایید کنید');
     const { tx, wallet } = await signupForContest({ contestId: contest.id });
 
-    setStep('در حال تایید تراکنش...');          // چند ثانیه طول می‌کشد
+    setStep('در حال تایید تراکنش...');          // takes a few seconds
     await tx.wait();
 
     setStep('در حال ثبت نهایی...');
     await config().post(`/contests/${contest.id}/signup/`, { wallet_address: wallet, tx_hash: tx.hash });
 } catch (err) {
-    setError(toFriendlyError(err).message);      // پیام آماده فارسی
+    setError(toFriendlyError(err).message);      // ready made Persian message
 }
 ```
 
-توابع دیگر: `claimRefund(contestId)` برای مسابقه لغو شده، `fetchContestFromBackend(contestId)` برای نمایش
-وضعیت روی‌زنجیره‌ای بدون نیاز به کیف پول، `hasPaidForContest(contestId)`.
+Other functions: `claimRefund(contestId)` for a cancelled contest, `fetchContestFromBackend(contestId)`
+to show the on-chain state without a wallet, and `hasPaidForContest(contestId)`.
 
-**نکات:**
+**Notes:**
 
-- مبلغ را هیچ‌وقت از UI تعیین نکنید؛ `signupForContest` قیمت را از خود قرارداد می‌خواند.
-- اگر کاربر وسط کار صفحه را ببندد، پول پرداخت شده ولی ثبت‌نام کامل نشده؛ با زدن دوباره دکمه، خطای
-  `AlreadyRegistered` می‌گیرید و فقط کافی است درخواست بک‌اند را دوباره بفرستید.
-- `screens/Contest.js` الان کاملا ثابت و تستی است و باید اطلاعات را از `/api/contests/<id>/` بگیرد.
-- باگ موجود: `utils/api.js` از `process.env.SERVER_APP_API_URL` استفاده می‌کند، ولی CRA فقط متغیرهای
-  `REACT_APP_` را داخل بیلد می‌گذارد → در پروداکشن همیشه `localhost:8000` می‌شود. به `REACT_APP_API_URL` تغییر دهید.
+- Never set the amount in the UI; `signupForContest` reads the price from the contract itself.
+- If the user closes the page in the middle, the money is paid but the signup is not finished. Pressing
+  the button again gives an `AlreadyRegistered` error - in that case just send the backend request again.
+- `screens/Contest.js` is still a static placeholder and has to load the contest from `/api/contests/<id>/`.
+- Existing bug: `utils/api.js` reads `process.env.SERVER_APP_API_URL`, but CRA only injects variables
+  prefixed with `REACT_APP_`, so production always falls back to `localhost:8000`. Rename it to
+  `REACT_APP_API_URL`.
 
 ---
 
-## API بک‌اند (زیر `/api/contract/`)
+## Backend API (under `/api/contract/`)
 
-| متد | آدرس | دسترسی |
+| Method | Path | Access |
 |---|---|---|
-| GET | `config/` | عمومی |
-| GET | `contests/<id>/` | عمومی — وضعیت مسابقه روی زنجیره |
-| GET | `contests/<id>/participants/<wallet>/` | کاربر لاگین‌کرده |
-| POST | `admin/contests/` | ادمین — `contest_id`, `price_eth`, `signup_deadline`, `budget_eth?` |
-| POST | `admin/contests/<id>/{deadline,budget,cancel,refund,withdraw}/` | ادمین |
-| POST | `admin/contests/<id>/award/{top3,percentage,fixed,duel,custom}/` | ادمین |
-| POST | `admin/{pause,unpause}/` · GET `admin/owner/` | ادمین |
-| GET | `admin/transactions/` و `admin/transactions/<tx_hash>/` | ادمین |
+| GET | `config/` | public |
+| GET | `contests/<id>/` | public - on-chain state of a contest |
+| GET | `contests/<id>/participants/<wallet>/` | logged in user |
+| POST | `admin/contests/` | admin - `contest_id`, `price_eth`, `signup_deadline`, `budget_eth?` |
+| POST | `admin/contests/<id>/{deadline,budget,cancel,refund,withdraw}/` | admin |
+| POST | `admin/contests/<id>/award/{top3,percentage,fixed,duel,custom}/` | admin |
+| POST | `admin/{pause,unpause}/` · GET `admin/owner/` | admin |
+| GET | `admin/transactions/` and `admin/transactions/<tx_hash>/` | admin |
 
-پاسخ `202` یعنی تراکنش **ارسال** شده (نه تایید‌شده): `{"tx_hash", "status": "pending", "explorer_url"}` —
-وضعیت نهایی را از `admin/transactions/<tx_hash>/` بگیرید.
-خطاها همیشه `{"error": "<کد>", "detail": "<پیام فارسی>"}` هستند؛ کد خطا در بک‌اند و فرانت یکسان است
-(`ContestNotFound`، `SignupClosed`، `AlreadyRegistered`، `InsufficientContestBalance`، `EnforcedPause`، ...).
-لیست کامل: `backend/contractapi/errors.py` و `frontend/src/blockchain/errors.js`.
-مستندات تعاملی: `/swagger/` با کاربر ادمین.
+A `202` response means the transaction was **sent**, not mined: `{"tx_hash", "status": "pending", "explorer_url"}`.
+Poll `admin/transactions/<tx_hash>/` for the final status.
+Errors are always `{"error": "<code>", "detail": "<Persian message>"}` and the codes are the same on the
+backend and the frontend (`ContestNotFound`, `SignupClosed`, `AlreadyRegistered`,
+`InsufficientContestBalance`, `EnforcedPause`, ...). Full list: `backend/contractapi/errors.py` and
+`frontend/src/blockchain/errors.js`. Interactive docs: `/swagger/` with an admin account.
 
 ---
 
-## امنیت
+## Security
 
-- APIهای مالی فقط برای `is_staff` باز هستند؛ همه تراکنش‌ها در جدول `ContractTransaction` لاگ می‌شوند و در پنل ادمین دیده می‌شوند.
-- موجودی کیف پول سرور را مرتب چک کنید (`GET /api/contract/admin/owner/`)؛ خالی شدنش یعنی اعلام برندگان شکست می‌خورد.
-- در شرایط اضطراری `POST /api/contract/admin/pause/` همه عملیات مالی را متوقف می‌کند.
-- بقیه نکات مربوط به کلید و کیف پول در بخش «استقرار» آمده است.
+- The money endpoints are admin only (`is_staff`); every transaction is logged in the
+  `ContractTransaction` table and visible in the Django admin.
+- Watch the balance of the server wallet (`GET /api/contract/admin/owner/`) - an empty wallet means
+  awarding prizes fails.
+- In an emergency `POST /api/contract/admin/pause/` stops every money operation.
+- The rest of the key / wallet notes are in the "Deployment" section.
 
-## تست
+## Tests
 
 ```bash
-cd contracts/Contest_prize && forge test                                   # ۵۰ تست قرارداد
+cd contracts/Contest_prize && forge test                                   # 50 contract tests
 cd backend && BLOCKCHAIN_TEST_RPC_URL=http://127.0.0.1:8545 python manage.py test contractapi
-cd frontend && npm test -- --watchAll=false --testPathPattern blockchain   # با anvil، جزئیات بالای فایل تست
+cd frontend && npm test -- --watchAll=false --testPathPattern blockchain   # needs anvil, see the test file header
 ```
 
-بعد از هر تغییر در `ContestPrize.sol`، حتما `bash script/export-abi.sh` را اجرا و خروجی را کامیت کنید
-(CI اگر ABI قدیمی باشد خطا می‌دهد).
+After any change to `ContestPrize.sol`, run `bash script/export-abi.sh` and commit the result
+(CI fails when the ABI is out of date).
