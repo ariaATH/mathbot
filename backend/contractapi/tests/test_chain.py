@@ -91,6 +91,9 @@ class OnChainTests(TestCase):
         self.admin = User.objects.create_user('admin', 'a@x.com', 'pass1234', is_staff=True)
         self.player = User.objects.create_user('player', 'p@x.com', 'pass1234')
         self.api.force_authenticate(self.admin)
+        # the node is shared by the whole class, so clean up what a previous test may have left
+        self.w3.provider.make_request('evm_setAutomine', [True])
+        self.force_unpause()
 
     # helpers ------------------------------------------------------------
 
@@ -107,9 +110,16 @@ class OnChainTests(TestCase):
         self.assertEqual(res.status_code, expect, res.content)
         data = res.json()
         if expect == 202:
+            # 202 only means "sent": wait for the receipt instead of assuming it is already mined
+            services.wait_for_transaction(ContractTransaction.objects.get(tx_hash=data['tx_hash']), timeout=60)
             detail = self.api.get(f"/api/contract/admin/transactions/{data['tx_hash']}/").json()
             self.assertEqual(detail['status'], 'success', detail)
         return data
+
+    def force_unpause(self):
+        """A failed test must not leave the contract paused for the rest of the suite."""
+        if self.contract.functions.paused().call():
+            send_as(self.w3, self.owner, self.contract.functions.unpause())
 
     def create(self, cid, price_eth='0.01', budget_eth='0'):
         return self.admin_post(
@@ -298,6 +308,7 @@ class OnChainTests(TestCase):
         self.assertTrue(self.api.get(f'/api/contract/contests/{cid}/').json()['signup_open'])
 
     def test_pause_blocks_admin_actions(self):
+        self.addCleanup(self.force_unpause)
         self.admin_post('/api/contract/admin/pause/')
         try:
             self.assertTrue(self.api.get('/api/contract/admin/owner/').json()['paused'])
