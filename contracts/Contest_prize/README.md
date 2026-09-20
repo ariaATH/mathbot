@@ -1,60 +1,66 @@
 # ContestPrize
 
-قرارداد هوشمند مسابقه‌های MathBot: هزینه ثبت‌نام و بودجه جایزه هر مسابقه را نگه می‌دارد و جوایز را به برندگان می‌فرستد.
-شناسه هر مسابقه روی قرارداد **همان `id` رکورد `Contest` در دیتابیس جنگو** است.
+Smart contract for the MathBot contests: it holds the entry fees and the prize budget of every
+contest and pays the winners. A contest id on the contract is **the `id` of its `Contest` row in the
+Django database**.
 
-مستند کامل اتصال به بک‌اند و فرانت: [`docs/blockchain-integration.md`](../../docs/blockchain-integration.md)
+Full integration guide for the backend and the frontend:
+[`docs/blockchain-integration.md`](../../docs/blockchain-integration.md)
 
-## ساختار
+## Layout
 
 ```
-src/ContestPrize.sol            قرارداد
-test/ContestPrize.t.sol         تست‌های واحد + fuzz
-test/ContestPrize.invariant.t.sol   تست invariant (حسابداری موجودی)
-script/ContestPrize.s.sol       استقرار
-script/export-abi.sh            ساخت ABI برای بک‌اند و فرانت
+src/ContestPrize.sol                the contract
+test/ContestPrize.t.sol             unit + fuzz tests
+test/ContestPrize.invariant.t.sol   invariant test (balance accounting)
+script/ContestPrize.s.sol           deployment
+script/export-abi.sh                writes the ABI for the backend and the frontend
 ```
 
-## Build و تست
+## Build and test
 
 ```bash
 forge build --sizes
 forge test -vvv
 forge coverage --no-match-coverage '\.t\.sol|\.s\.sol'
-forge fmt            # CI با forge fmt --check چک می‌کند
+forge fmt            # CI checks this with forge fmt --check
 ```
 
-وابستگی‌ها: `lib/forge-std` یک submodule است، پس بعد از clone:
+Dependencies: `lib/forge-std` is a submodule, so after cloning run
 
 ```bash
 git submodule update --init --recursive
 ```
 
-## استقرار
+## Deployment
 
 ```bash
-cp .env.example .env     # SEPOLIA_RPC_URL و PRIVATE_KEY را پر کنید
+cp .env.example .env     # fill in SEPOLIA_RPC_URL and PRIVATE_KEY
 forge script script/ContestPrize.s.sol:Deploycontestprize --rpc-url sepolia --broadcast --verify
 ```
 
-- به جای `PRIVATE_KEY` می‌توانید از keystore رمزگذاری‌شده استفاده کنید:
-  `cast wallet import deployer --interactive` و سپس `--account deployer`.
-- اگر `CONTRACT_OWNER` ست شود، مالکیت بلافاصله بعد از استقرار به آن آدرس (کیف پول بک‌اند) منتقل می‌شود.
+- Instead of `PRIVATE_KEY` you can use an encrypted keystore:
+  `cast wallet import deployer --interactive` and then `--account deployer`.
+- If `CONTRACT_OWNER` is set, ownership is transferred to that address (the backend wallet) right
+  after the deploy.
 
-بعد از استقرار:
+After deploying:
 
-1. آدرس قرارداد را در `backend/.env` → `CONTEST_CONTRACT_ADDRESS` بگذارید.
-2. اگر قرارداد تغییر کرده: `bash script/export-abi.sh` و کامیت خروجی‌ها.
+1. Put the contract address in `backend/.env` → `CONTEST_CONTRACT_ADDRESS`.
+2. If the contract changed, run `bash script/export-abi.sh` and commit the generated files.
 
-## نکات قرارداد
+## Notes
 
-- **مالک = کیف پول بک‌اند**. ساخت مسابقه، اعلام برندگان، لغو، بازپرداخت و برداشت فقط با مالک انجام می‌شود.
-- پول هر مسابقه جداگانه حساب می‌شود؛ مجموع `Total_amount` مسابقه‌ها همیشه برابر موجودی قرارداد است
-  (تست invariant همین را چک می‌کند).
-- `signup(id, userRef)` علاوه بر پرداخت، شناسه کاربر بک‌اند را ذخیره می‌کند تا بک‌اند بتواند پرداخت را
-  به همان کاربر نسبت دهد.
-- ارسال مستقیم اتر به قرارداد رد می‌شود (تابع `receive` ندارد) تا پولی بدون ثبت‌نام گم نشود.
-- `renounceOwnership` غیرفعال است (وگرنه پول مسابقه‌ها برای همیشه قفل می‌شد).
-- در شرایط اضطراری `pause()` همه عملیات مالی را متوقف می‌کند.
+- **The owner is the backend wallet.** Creating a contest, awarding prizes, cancelling, refunding and
+  withdrawing are owner-only.
+- Each contest keeps its own money: the sum of all `Total_amount` values always equals the contract
+  balance (the invariant test checks exactly this).
+- Besides taking the payment, `signup(id, userRef)` stores the backend user id, so the backend can tie
+  a payment to the account that made it.
+- Sending ETH directly to the contract is rejected (there is no `receive` function), so money cannot
+  be lost without a signup.
+- `renounceOwnership` is disabled - otherwise the contest money would be locked forever.
+- In an emergency `pause()` stops every money operation.
 
-نام توابع عمدا به همان شکل قبلی (`Addcomp`، `Awardwinners`، ...) نگه داشته شده تا بک‌اند و فرانت تغییر نکنند.
+The public function names (`Addcomp`, `Awardwinners`, ...) are kept as they were, so the backend and
+the frontend do not have to change.
